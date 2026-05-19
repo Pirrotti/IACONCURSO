@@ -6,9 +6,10 @@ export default async function handler(req, res) {
   if (req.method === 'OPTIONS') return res.status(200).end();
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
-  const { messages, system, max_tokens, apiKey } = req.body || {};
+  const { messages, system, max_tokens } = req.body || {};
+  const apiKey = process.env.ANTHROPIC_API_KEY;
 
-  if (!apiKey) return res.status(400).json({ error: 'apiKey required' });
+  if (!apiKey) return res.status(500).json({ error: 'API key not configured' });
   if (!messages) return res.status(400).json({ error: 'messages required' });
 
   try {
@@ -26,7 +27,6 @@ export default async function handler(req, res) {
         messages: messages
       })
     });
-
     const data = await response.json();
     return res.status(response.status).json(data);
   } catch (error) {
