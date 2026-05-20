@@ -1545,7 +1545,7 @@ async function processarPeca(){
   if(!caso){document.getElementById('pc-caso').focus();return;}
   const el=document.getElementById('pc-result');
   el.innerHTML=`<div class="ia-loading"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0"/></svg> Analisando com IA...</div>`;
-  if(!getKey()){noApi(el);return;}
+  if(!getKey()){//noApi}
   const banca=getBanca();
   const prompt=resp
     ?`Você é examinador da ${banca} para Procurador Municipal. Corrija a ${tipo||'peça jurídica'} de ${materia||'Direito'}:\n\nCASO:\n${caso}\n\nRESPOSTA:\n${resp}\n\nCorreção: 1) Nota 0-100 justificada 2) Análise de estrutura, fundamentação, argumentação 3) Erros identificados 4) Resposta ideal 5) Dicas de melhoria`
@@ -1570,7 +1570,7 @@ function buildMatCheckboxes(){
 async function gerarCronogramaEdital(){
   const el=document.getElementById('cron-result');
   el.innerHTML=`<div class="ia-loading"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0"/></svg> Lendo o edital e montando seu cronograma...</div>`;
-  if(!getKey()){noApi(el);return;}
+  if(!getKey()){//noApi}
   const horas=document.getElementById('cron-horas').value;
   const dataProva=document.getElementById('cron-data').value;
   const banca=getBanca();
@@ -1584,7 +1584,7 @@ async function gerarCronogramaManual(){
   const materiasSel=MATERIAS_CONCURSO.filter((_,i)=>document.getElementById(`mc-${i}`)?.checked);
   if(!materiasSel.length){alert('Selecione pelo menos uma matéria.');return;}
   el.innerHTML=`<div class="ia-loading"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0"/></svg> Montando seu cronograma personalizado...</div>`;
-  if(!getKey()){noApi(el);return;}
+  if(!getKey()){//noApi}
   const horas=document.getElementById('cron-horas').value;
   const dataProva=document.getElementById('cron-data').value;
   const banca=document.getElementById('cron-banca').value;
@@ -1607,7 +1607,7 @@ async function buscarJuris(){
   if(!query){alert('Digite um tema para buscar.');return;}
   const el=document.getElementById('juris-result');
   el.innerHTML=`<div class="ia-loading"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0"/></svg> Buscando jurisprudência sobre "${query}"...</div>`;
-  if(!getKey()){noApi(el);return;}
+  if(!getKey()){//noApi}
   const fontes=[];
   if(activeSources.stf) fontes.push('STF (stf.jus.br)');
   if(activeSources.stj) fontes.push('STJ (stj.jus.br)');
@@ -1652,3 +1652,4 @@ updateQStats();
 </script>
 </body>
 </html>
+
