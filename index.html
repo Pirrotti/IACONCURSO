@@ -93,6 +93,61 @@
   --shadow-md:0 4px 12px rgba(0,0,0,.08),0 2px 4px rgba(0,0,0,.04);
   --shadow-lg:0 12px 32px rgba(0,0,0,.1),0 4px 8px rgba(0,0,0,.06);
 }
+/* ── DARK MODE ── */
+body.dark {
+  --white:#1e2030; --bg:#151726; --bg2:#1a1c2e;
+  --border:#2a2d45; --border2:#363960;
+  --text:#e2e5f0; --text2:#a8aec8; --text3:#6b7194;
+  --accent:#4a7aff; --accent-light:#1a2450; --accent-dark:#3366ee;
+  --green:#22c55e; --green-light:#0a2218;
+  --amber:#f59e0b; --amber-light:#1e1604;
+  --red:#ef4444; --red-light:#1e0a0a;
+  --purple:#a855f7; --purple-light:#1a0d2e;
+  --teal:#14b8a6; --teal-light:#041e1c;
+  --shadow:0 1px 3px rgba(0,0,0,.3),0 1px 2px rgba(0,0,0,.2);
+  --shadow-md:0 4px 12px rgba(0,0,0,.4),0 2px 4px rgba(0,0,0,.3);
+  --shadow-lg:0 12px 32px rgba(0,0,0,.5),0 4px 8px rgba(0,0,0,.3);
+}
+body.dark input,body.dark select,body.dark textarea{background:var(--bg2);color:var(--text)}
+body.dark .card{background:var(--white)}
+body.dark .msg-bubble{background:var(--bg2)}
+body.dark .msg.user .msg-bubble{background:var(--accent)}
+/* DARK TOGGLE */
+.dark-toggle{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;cursor:pointer;border:none;background:none;width:100%;color:var(--text2);font-size:13px;font-weight:500;text-align:left}
+.dark-toggle:hover{background:var(--bg)}
+.toggle-switch{width:36px;height:20px;background:var(--border2);border-radius:10px;position:relative;transition:.3s;flex-shrink:0;pointer-events:none}
+.toggle-switch::after{content:'';position:absolute;width:14px;height:14px;background:white;border-radius:50%;top:3px;left:3px;transition:.3s}
+body.dark .toggle-switch{background:var(--accent)}
+body.dark .toggle-switch::after{transform:translateX(16px)}
+/* POMODORO */
+.pomo-bar{background:var(--white);border:1.5px solid var(--border);border-radius:var(--radius);padding:12px 16px;margin-bottom:12px}
+.pomo-row{display:flex;align-items:center;gap:10px}
+.pomo-display{font-size:22px;font-weight:800;color:var(--text);font-variant-numeric:tabular-nums;min-width:62px}
+.pomo-info{flex:1}
+.pomo-label{font-size:11px;color:var(--text3);font-weight:600;text-transform:uppercase;letter-spacing:.05em}
+.pomo-sublabel{font-size:11px;color:var(--text3)}
+.pomo-btns{display:flex;gap:6px}
+.pomo-progress{height:3px;background:var(--border);border-radius:2px;margin-top:8px;overflow:hidden}
+.pomo-fill{height:100%;background:var(--accent);border-radius:2px;transition:width 1s linear}
+.pomo-break .pomo-fill{background:var(--green)}
+/* HOJE NO CRONOGRAMA */
+.hoje-card{background:var(--white);border:1.5px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:16px}
+.hoje-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.hoje-titulo{font-size:14px;font-weight:700;color:var(--text)}
+.hoje-badge{font-size:11px;background:var(--accent-light);color:var(--accent);padding:3px 8px;border-radius:20px;font-weight:600}
+.hoje-itens{display:flex;flex-wrap:wrap;gap:8px}
+.hoje-item{display:flex;align-items:center;gap:6px;padding:6px 10px;background:var(--bg);border-radius:var(--radius-sm);font-size:12px;font-weight:500;color:var(--text2)}
+.hoje-item-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.hoje-vazio{font-size:13px;color:var(--text3);text-align:center;padding:8px}
+/* DESEMPENHO MELHORADO */
+.streak-card{background:linear-gradient(135deg,var(--accent),var(--accent-dark));color:white;border-radius:var(--radius);padding:16px;text-align:center;margin-bottom:12px}
+.streak-num{font-size:36px;font-weight:800;line-height:1}
+.streak-label{font-size:12px;opacity:.8;margin-top:4px}
+.heat-map{display:flex;flex-wrap:wrap;gap:3px;margin-top:8px}
+.heat-cell{width:13px;height:13px;border-radius:2px;background:var(--border)}
+.heat-cell.l1{background:#bfdbfe}.heat-cell.l2{background:#93c5fd}.heat-cell.l3{background:#3b82f6}.heat-cell.l4{background:#1d4ed8}
+body.dark .heat-cell.l1{background:#1e3a5f}body.dark .heat-cell.l2{background:#1a4070}body.dark .heat-cell.l3{background:#1e56a0}body.dark .heat-cell.l4{background:#2563eb}
+
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.6}
 input,select,textarea,button{font-family:inherit}
@@ -625,6 +680,10 @@ tr:hover td{background:var(--bg)}
       </div>
     </div>
   </div>
+<button class="dark-toggle" onclick="toggleDark()" id="darkToggleBtn">
+<span style="display:flex;align-items:center;gap:8px"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>Modo escuro</span>
+<span class="toggle-switch"></span>
+</button>
 </nav>
 
 <!-- MAIN -->
@@ -688,6 +747,15 @@ tr:hover td{background:var(--bg)}
       </div>
     </div>
 
+
+    <!-- HOJE NO CRONOGRAMA -->
+    <div class="hoje-card" id="hojeCard" style="display:none">
+      <div class="hoje-header">
+        <span class="hoje-titulo">📅 Hoje no Cronograma</span>
+        <span class="hoje-badge" id="hojeBadge">Carregando...</span>
+      </div>
+      <div class="hoje-itens" id="hojeItens"><div class="hoje-vazio">Sem itens para hoje</div></div>
+    </div>
     <div style="font-size:15px;font-weight:800;margin-bottom:16px;color:var(--text)">Módulos do Sistema</div>
     <div class="module-grid">
       <div class="module-card blue" onclick="nav('agente')">
@@ -743,6 +811,22 @@ tr:hover td{background:var(--bg)}
       <div class="chat-hist-list" id="chatHistList"><div class="chat-hist-vazio">Nenhuma conversa.<br>Inicie um chat!</div></div>
     </div>
     <div style="flex:1;display:flex;flex-direction:column;min-width:0">
+          <!-- POMODORO TIMER -->
+          <div class="pomo-bar" id="pomoBar">
+            <div class="pomo-row">
+              <div class="pomo-info">
+                <div class="pomo-label" id="pomoLabel">🍅 Foco</div>
+                <div class="pomo-sublabel" id="pomoSub">Ciclo <span id="pomoCiclo">1</span> de 4</div>
+              </div>
+              <div class="pomo-display" id="pomoDisplay">25:00</div>
+              <div class="pomo-btns">
+                <button class="btn btn-sm btn-ghost" onclick="pomoToggle()" id="pomoPlayBtn" title="Iniciar/Pausar">▶</button>
+                <button class="btn btn-sm btn-ghost" onclick="pomoReset()" title="Reiniciar">↺</button>
+                <button class="btn btn-xs btn-ghost" onclick="pomoSkip()" title="Pular" style="font-size:11px">Pular →</button>
+              </div>
+            </div>
+            <div class="pomo-progress"><div class="pomo-fill" id="pomoFill" style="width:100%"></div></div>
+          </div>
       <div class="chat-wrap" style="height:100%">
         <div class="chat-head">
           <div class="agent-ava"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
@@ -1355,6 +1439,7 @@ tr:hover td{background:var(--bg)}
       <div class="stat-card"><div class="stat-label">Erradas</div><div class="stat-value" id="d-err" style="color:var(--red)">0</div></div>
       <div class="stat-card"><div class="stat-label">Taxa acerto</div><div class="stat-value" id="d-tx" style="color:var(--amber)">—</div></div>
     </div>
+    <div id="desemp-streak"></div>
     <div style="font-size:14px;font-weight:700;margin-bottom:14px">Desempenho por matéria</div>
     <div id="d-por-materia"></div>
   </div>
@@ -1590,11 +1675,137 @@ function renderHome(){
   document.getElementById('st-q').textContent=desemp.r;
   document.getElementById('st-tx').textContent=desemp.r>0?Math.round(desemp.c/desemp.r*100)+'%':'—';
   document.getElementById('st-pv').textContent=provas.length;
+  renderHoje();
 }
 
 // ══════════════════════════════════════════
 // CONFIG
 // ══════════════════════════════════════════
+// ── DARK MODE ──
+function toggleDark(){
+  const isDark = document.body.classList.toggle('dark');
+  localStorage.setItem('cj2_dark', isDark ? '1' : '');
+}
+(function initDark(){
+  if(localStorage.getItem('cj2_dark')) document.body.classList.add('dark');
+})();
+
+// ── POMODORO TIMER ──
+let _pomoState = {
+  running: false,
+  mode: 'work', // 'work' | 'break' | 'longbreak'
+  seconds: 25 * 60,
+  totalSeconds: 25 * 60,
+  ciclo: 1,
+  interval: null,
+  workMin: 25,
+  breakMin: 5,
+  longMin: 15,
+};
+function _pomoTick(){
+  const s = _pomoState;
+  if(!s.running) return;
+  s.seconds--;
+  _pomoRender();
+  if(s.seconds <= 0){
+    clearInterval(s.interval);
+    s.running = false;
+    // Avançar modo
+    if(s.mode === 'work'){
+      if(s.ciclo >= 4){ s.mode = 'longbreak'; s.totalSeconds = s.longMin * 60; }
+      else { s.mode = 'break'; s.totalSeconds = s.breakMin * 60; }
+    } else {
+      if(s.mode === 'longbreak') s.ciclo = 1;
+      else s.ciclo++;
+      s.mode = 'work';
+      s.totalSeconds = s.workMin * 60;
+    }
+    s.seconds = s.totalSeconds;
+    _pomoRender();
+    try{ new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAA...').play().catch(()=>{}); } catch(e){}
+    showToast(s.mode === 'work' ? '🍅 Hora de focar!' : '☕ Pausa!');
+  }
+}
+function _pomoRender(){
+  const s = _pomoState;
+  const min = String(Math.floor(s.seconds/60)).padStart(2,'0');
+  const sec = String(s.seconds%60).padStart(2,'0');
+  const disp = document.getElementById('pomoDisplay');
+  const lbl = document.getElementById('pomoLabel');
+  const sub = document.getElementById('pomoSub');
+  const fill = document.getElementById('pomoFill');
+  const btn = document.getElementById('pomoPlayBtn');
+  const bar = document.getElementById('pomoBar');
+  if(!disp) return;
+  disp.textContent = min + ':' + sec;
+  const labels = {work: '🍅 Foco', break: '☕ Pausa', longbreak: '🌟 Pausa longa'};
+  if(lbl) lbl.textContent = labels[s.mode] || '🍅 Foco';
+  if(sub) { sub.innerHTML = 'Ciclo <span id="pomoCiclo">' + s.ciclo + '</span> de 4'; }
+  const pct = (s.seconds / s.totalSeconds) * 100;
+  if(fill) fill.style.width = pct + '%';
+  if(btn) btn.textContent = s.running ? '⏸' : '▶';
+  if(bar){ bar.className = 'pomo-bar' + (s.mode !== 'work' ? ' pomo-break' : ''); }
+}
+function pomoToggle(){
+  const s = _pomoState;
+  s.running = !s.running;
+  if(s.running){ s.interval = setInterval(_pomoTick, 1000); }
+  else { clearInterval(s.interval); }
+  _pomoRender();
+}
+function pomoReset(){
+  const s = _pomoState;
+  clearInterval(s.interval);
+  s.running = false;
+  s.mode = 'work';
+  s.seconds = s.workMin * 60;
+  s.totalSeconds = s.seconds;
+  s.ciclo = 1;
+  _pomoRender();
+}
+function pomoSkip(){
+  const s = _pomoState;
+  clearInterval(s.interval);
+  s.running = false;
+  s.seconds = 0;
+  _pomoTick();
+}
+
+// ── HOJE NO CRONOGRAMA ──
+function renderHoje(){
+  const card = document.getElementById('hojeCard');
+  const badge = document.getElementById('hojeBadge');
+  const itens = document.getElementById('hojeItens');
+  if(!card || !cronState || !cronState.cronograma || !cronState.cronograma.length) return;
+  const hoje = new Date();
+  const hojeDia = hoje.getDay(); // 0=dom, 1=seg,...
+  const hojeStr = hoje.toLocaleDateString('pt-BR', {day:'2-digit', month:'2-digit'});
+  const cores = ['#2563eb','#16a34a','#d97706','#7c3aed','#0d9488','#dc2626','#ea580c','#0284c7'];
+  // Encontrar a semana atual
+  let diaHoje = null;
+  const semanaAtual = cronState.semana_atual || 0;
+  const semana = cronState.cronograma[semanaAtual] || cronState.cronograma[0];
+  if(semana && semana.dias){
+    diaHoje = semana.dias.find(d => d.data && d.data.includes(hojeStr));
+    if(!diaHoje) diaHoje = semana.dias.find(d => !d.descanso && d.itens && d.itens.length);
+  }
+  if(!diaHoje || !diaHoje.itens || !diaHoje.itens.length){
+    card.style.display = 'block';
+    if(badge) badge.textContent = hojeStr;
+    if(itens) itens.innerHTML = '<div class="hoje-vazio">Nenhuma atividade programada para hoje</div>';
+    return;
+  }
+  card.style.display = 'block';
+  if(badge) badge.textContent = hojeStr + ' · ' + diaHoje.itens.length + ' item(s)';
+  const mats = {};
+  let corIdx = 0;
+  if(itens) itens.innerHTML = diaHoje.itens.map(it => {
+    if(!mats[it.materia]) mats[it.materia] = cores[corIdx++ % cores.length];
+    const cor = mats[it.materia];
+    return '<div class="hoje-item"><div class="hoje-item-dot" style="background:' + cor + '"></div><span>' + (it.topico || it.materia) + '</span></div>';
+  }).join('');
+}
+
 function saveConfig(){
   const k=document.getElementById('cfg-key').value.trim();
   const b=document.getElementById('cfg-banca').value;
@@ -2129,26 +2340,75 @@ async function buscarJuris(){
 // DESEMPENHO
 // ══════════════════════════════════════════
 function renderDesempenho(){
-  const t=desemp.r,c=desemp.c,e=t-c;
-  document.getElementById('d-total').textContent=t;
-  document.getElementById('d-corr').textContent=c;
-  document.getElementById('d-err').textContent=e;
-  document.getElementById('d-tx').textContent=t>0?Math.round(c/t*100)+'%':'—';
-  const pm=desemp.pm||{};
-  const el=document.getElementById('d-por-materia');
-  if(!Object.keys(pm).length){el.innerHTML=`<div class="card"><div class="empty-state"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>Responda questões para ver seu desempenho aqui.</div></div>`;return;}
-  el.innerHTML=Object.entries(pm).map(([m,v])=>{
-    const taxa=v.r>0?Math.round(v.c/v.r*100):0;
-    const cor=taxa>=70?'var(--green)':taxa>=50?'var(--amber)':'var(--red)';
-    const pcls=taxa>=70?'progress-green':taxa>=50?'progress-amber':'progress-red';
-    return`<div class="card card-sm" style="margin-bottom:10px">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-        <span style="font-size:13px;font-weight:700">${m}</span>
-        <div style="display:flex;align-items:center;gap:10px"><span style="font-size:12px;color:var(--text3)">${v.c}/${v.r} certas</span><span style="font-weight:800;color:${cor}">${taxa}%</span></div>
+  const d = desemp;
+  // Stats básicas
+  const totalEl = document.getElementById('d-total'); if(totalEl) totalEl.textContent = d.r;
+  const corrEl = document.getElementById('d-corr'); if(corrEl) corrEl.textContent = d.c;
+  const errEl = document.getElementById('d-err'); if(errEl) errEl.textContent = d.r - d.c;
+  const txEl = document.getElementById('d-tx'); if(txEl) txEl.textContent = Math.round((d.r>0?d.c/d.r:0)*100) + '%';
+  // Por matéria
+  const pmEl = document.getElementById('d-por-materia');
+  if(pmEl){
+    if(!Object.keys(d.pm||{}).length){ pmEl.innerHTML = '<div class="empty-state" style="padding:16px">Nenhuma questão resolvida ainda</div>'; }
+    else { pmEl.innerHTML = Object.entries(d.pm).sort((a,b)=>((b[1].r+b[1].e)-(a[1].r+a[1].e))).map(([mat,v])=>{
+      const total = v.r;
+      const taxa = Math.round(total>0 ? (v.c||0)/total*100 : 0);
+      const cor = taxa>=70?'var(--green)':taxa>=50?'var(--amber)':'var(--red)';
+      const pcls = taxa>=70?'progress-green':taxa>=50?'progress-amber':'progress-red';
+      return `<div class="card card-sm" style="margin-bottom:8px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+          <span style="font-size:13px;font-weight:600">${mat}</span>
+          <span style="font-size:13px;font-weight:700;color:${cor}">${taxa}%</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+          <span style="font-size:11px;color:var(--text3)">${total} questões · ${v.c||0} certas · ${total-(v.c||0)} erradas</span>
+        </div>
+        <div class="progress"><div class="progress-fill ${pcls}" style="width:${taxa}%"></div></div>
+      </div>`;
+    }).join(''); }
+  }
+  // Streak e Heatmap
+  const studyDays = JSON.parse(localStorage.getItem('cj2_study_days') || '{}');
+  const today = new Date();
+  // Calcular streak
+  let streak = 0;
+  for(let i=0;i<365;i++){
+    const d2 = new Date(today); d2.setDate(d2.getDate() - i);
+    const key = d2.toISOString().slice(0,10);
+    if(studyDays[key]) streak++;
+    else if(i>0) break;
+  }
+  // Marcar hoje como dia de estudo se resolveu questões
+  if(d.r > 0){
+    const todayKey = today.toISOString().slice(0,10);
+    studyDays[todayKey] = (studyDays[todayKey]||0) + 1;
+    localStorage.setItem('cj2_study_days', JSON.stringify(studyDays));
+  }
+  // Renderizar streak card
+  const streakEl = document.getElementById('desemp-streak');
+  if(streakEl) streakEl.innerHTML = `
+    <div class="streak-card">
+      <div class="streak-num">${streak}</div>
+      <div class="streak-label">🔥 dias seguidos de estudo</div>
+    </div>
+    <div class="card card-sm" style="margin-bottom:12px">
+      <div style="font-size:12px;font-weight:600;color:var(--text3);margin-bottom:8px">ATIVIDADE DOS ÚLTIMOS 12 SEMANAS</div>
+      <div class="heat-map">${(()=>{
+        const cells = [];
+        for(let i=83;i>=0;i--){
+          const d3=new Date(today); d3.setDate(d3.getDate()-i);
+          const k=d3.toISOString().slice(0,10);
+          const v=studyDays[k]||0;
+          const cls=v===0?'':v<3?'l1':v<6?'l2':v<10?'l3':'l4';
+          cells.push(`<div class="heat-cell ${cls}" title="${k}: ${v} questões"></div>`);
+        }
+        return cells.join('');
+      })()}</div>
+      <div style="display:flex;gap:4px;align-items:center;margin-top:6px;font-size:11px;color:var(--text3)">
+        Menos <div class="heat-cell"></div><div class="heat-cell l1"></div><div class="heat-cell l2"></div><div class="heat-cell l3"></div><div class="heat-cell l4"></div> Mais
       </div>
-      <div class="progress"><div class="progress-fill ${pcls}" style="width:${taxa}%"></div></div>
-    </div>`;
-  }).join('');
+    </div>
+  `;
 }
 
 // ══════════════════════════════════════════
@@ -2949,6 +3209,9 @@ document.addEventListener('DOMContentLoaded', () => {
     if(el1) el1.value = cronState.data_inicio;
     if(el2) el2.value = cronState.data_prova;
   }
+  _pomoRender();
+  // Sync dark toggle btn
+  if(document.body.classList.contains('dark') && document.getElementById('darkToggleBtn')) document.getElementById('darkToggleBtn').style.color='var(--accent)';
   updateCronProgress();
 });
 
