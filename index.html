@@ -1703,14 +1703,13 @@ let _pomoState = {
   longMin: 15,
 };
 function _pomoTick(){
-  const s = _pomoState;
+  var s = _pomoState;
   if(!s.running) return;
   s.seconds--;
   _pomoRender();
   if(s.seconds <= 0){
     clearInterval(s.interval);
     s.running = false;
-    // Avançar modo
     if(s.mode === 'work'){
       if(s.ciclo >= 4){ s.mode = 'longbreak'; s.totalSeconds = s.longMin * 60; }
       else { s.mode = 'break'; s.totalSeconds = s.breakMin * 60; }
@@ -1722,39 +1721,38 @@ function _pomoTick(){
     }
     s.seconds = s.totalSeconds;
     _pomoRender();
-    try{ new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAA...').play().catch(()=>{}); } catch(e){}
-    showToast(s.mode === 'work' ? '🍅 Hora de focar!' : '☕ Pausa!');
+    showToast(s.mode === 'work' ? 'Hora de focar!' : 'Pausa!');
   }
 }
 function _pomoRender(){
-  const s = _pomoState;
-  const min = String(Math.floor(s.seconds/60)).padStart(2,'0');
-  const sec = String(s.seconds%60).padStart(2,'0');
-  const disp = document.getElementById('pomoDisplay');
-  const lbl = document.getElementById('pomoLabel');
-  const sub = document.getElementById('pomoSub');
-  const fill = document.getElementById('pomoFill');
-  const btn = document.getElementById('pomoPlayBtn');
-  const bar = document.getElementById('pomoBar');
+  var s = _pomoState;
+  var min = String(Math.floor(s.seconds / 60)).padStart(2, '0');
+  var sec = String(s.seconds % 60).padStart(2, '0');
+  var disp = document.getElementById('pomoDisplay');
+  var lbl = document.getElementById('pomoLabel');
+  var sub = document.getElementById('pomoSub');
+  var fill = document.getElementById('pomoFill');
+  var btn = document.getElementById('pomoPlayBtn');
+  var bar = document.getElementById('pomoBar');
   if(!disp) return;
   disp.textContent = min + ':' + sec;
-  const labels = {work: '🍅 Foco', break: '☕ Pausa', longbreak: '🌟 Pausa longa'};
-  if(lbl) lbl.textContent = labels[s.mode] || '🍅 Foco';
-  if(sub) { sub.innerHTML = 'Ciclo <span id="pomoCiclo">' + s.ciclo + '</span> de 4'; }
-  const pct = (s.seconds / s.totalSeconds) * 100;
+  var labels = {work: 'Foco', break: 'Pausa', longbreak: 'Pausa longa'};
+  if(lbl) lbl.textContent = (s.mode === 'work' ? '🍅 ' : '☕ ') + (labels[s.mode] || 'Foco');
+  if(sub) sub.innerHTML = 'Ciclo <span id="pomoCiclo">' + s.ciclo + '</span> de 4';
+  var pct = (s.seconds / s.totalSeconds) * 100;
   if(fill) fill.style.width = pct + '%';
   if(btn) btn.textContent = s.running ? '⏸' : '▶';
-  if(bar){ bar.className = 'pomo-bar' + (s.mode !== 'work' ? ' pomo-break' : ''); }
+  if(bar) bar.className = 'pomo-bar' + (s.mode !== 'work' ? ' pomo-break' : '');
 }
 function pomoToggle(){
-  const s = _pomoState;
+  var s = _pomoState;
   s.running = !s.running;
   if(s.running){ s.interval = setInterval(_pomoTick, 1000); }
   else { clearInterval(s.interval); }
   _pomoRender();
 }
 function pomoReset(){
-  const s = _pomoState;
+  var s = _pomoState;
   clearInterval(s.interval);
   s.running = false;
   s.mode = 'work';
@@ -1764,14 +1762,12 @@ function pomoReset(){
   _pomoRender();
 }
 function pomoSkip(){
-  const s = _pomoState;
+  var s = _pomoState;
   clearInterval(s.interval);
   s.running = false;
   s.seconds = 0;
   _pomoTick();
 }
-
-// ── HOJE NO CRONOGRAMA ──
 function renderHoje(){
   const card = document.getElementById('hojeCard');
   const badge = document.getElementById('hojeBadge');
@@ -2340,77 +2336,82 @@ async function buscarJuris(){
 // DESEMPENHO
 // ══════════════════════════════════════════
 function renderDesempenho(){
-  const d = desemp;
-  // Stats básicas
-  const totalEl = document.getElementById('d-total'); if(totalEl) totalEl.textContent = d.r;
-  const corrEl = document.getElementById('d-corr'); if(corrEl) corrEl.textContent = d.c;
-  const errEl = document.getElementById('d-err'); if(errEl) errEl.textContent = d.r - d.c;
-  const txEl = document.getElementById('d-tx'); if(txEl) txEl.textContent = Math.round((d.r>0?d.c/d.r:0)*100) + '%';
-  // Por matéria
-  const pmEl = document.getElementById('d-por-materia');
+  var d = desemp;
+  var totalEl = document.getElementById('d-total');
+  if(totalEl) totalEl.textContent = d.r;
+  var corrEl = document.getElementById('d-corr');
+  if(corrEl) corrEl.textContent = d.c;
+  var errEl = document.getElementById('d-err');
+  if(errEl) errEl.textContent = d.r - d.c;
+  var txEl = document.getElementById('d-tx');
+  if(txEl) txEl.textContent = Math.round((d.r > 0 ? d.c / d.r : 0) * 100) + '%';
+  var pmEl = document.getElementById('d-por-materia');
   if(pmEl){
-    if(!Object.keys(d.pm||{}).length){ pmEl.innerHTML = '<div class="empty-state" style="padding:16px">Nenhuma questão resolvida ainda</div>'; }
-    else { pmEl.innerHTML = Object.entries(d.pm).sort((a,b)=>((b[1].r+b[1].e)-(a[1].r+a[1].e))).map(([mat,v])=>{
-      const total = v.r;
-      const taxa = Math.round(total>0 ? (v.c||0)/total*100 : 0);
-      const cor = taxa>=70?'var(--green)':taxa>=50?'var(--amber)':'var(--red)';
-      const pcls = taxa>=70?'progress-green':taxa>=50?'progress-amber':'progress-red';
-      return `<div class="card card-sm" style="margin-bottom:8px">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
-          <span style="font-size:13px;font-weight:600">${mat}</span>
-          <span style="font-size:13px;font-weight:700;color:${cor}">${taxa}%</span>
-        </div>
-        <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
-          <span style="font-size:11px;color:var(--text3)">${total} questões · ${v.c||0} certas · ${total-(v.c||0)} erradas</span>
-        </div>
-        <div class="progress"><div class="progress-fill ${pcls}" style="width:${taxa}%"></div></div>
-      </div>`;
-    }).join(''); }
+    var pm = d.pm || {};
+    var keys = Object.keys(pm);
+    if(!keys.length){
+      pmEl.innerHTML = '<div class="empty-state" style="padding:16px">Nenhuma questão resolvida ainda</div>';
+    } else {
+      var entries = Object.entries(pm).sort(function(a,b){ return (b[1].r+b[1].e)-(a[1].r+a[1].e); });
+      var html = '';
+      for(var ei = 0; ei < entries.length; ei++){
+        var mat = entries[ei][0];
+        var v = entries[ei][1];
+        var total = v.r;
+        var taxa = Math.round(total > 0 ? (v.c || 0) / total * 100 : 0);
+        var cor = taxa >= 70 ? 'var(--green)' : taxa >= 50 ? 'var(--amber)' : 'var(--red)';
+        var pcls = taxa >= 70 ? 'progress-green' : taxa >= 50 ? 'progress-amber' : 'progress-red';
+        html += '<div class="card card-sm" style="margin-bottom:8px">';
+        html += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">';
+        html += '<span style="font-size:13px;font-weight:600">' + mat + '</span>';
+        html += '<span style="font-size:13px;font-weight:700;color:' + cor + '">' + taxa + '%</span>';
+        html += '</div>';
+        html += '<div style="font-size:11px;color:var(--text3);margin-bottom:4px">' + total + ' questões · ' + (v.c || 0) + ' certas · ' + (total - (v.c || 0)) + ' erradas</div>';
+        html += '<div class="progress"><div class="progress-fill ' + pcls + '" style="width:' + taxa + '%"></div></div>';
+        html += '</div>';
+      }
+      pmEl.innerHTML = html;
+    }
   }
-  // Streak e Heatmap
-  const studyDays = JSON.parse(localStorage.getItem('cj2_study_days') || '{}');
-  const today = new Date();
-  // Calcular streak
-  let streak = 0;
-  for(let i=0;i<365;i++){
-    const d2 = new Date(today); d2.setDate(d2.getDate() - i);
-    const key = d2.toISOString().slice(0,10);
-    if(studyDays[key]) streak++;
-    else if(i>0) break;
+  var streakEl = document.getElementById('desemp-streak');
+  if(streakEl){
+    var studyDays = {};
+    try { studyDays = JSON.parse(localStorage.getItem('cj2_study_days') || '{}'); } catch(e){}
+    var today = new Date();
+    var streak = 0;
+    for(var si = 0; si < 365; si++){
+      var sd = new Date(today);
+      sd.setDate(sd.getDate() - si);
+      var skey = sd.toISOString().slice(0, 10);
+      if(studyDays[skey]) streak++;
+      else if(si > 0) break;
+    }
+    if(d.r > 0){
+      var todayKey = today.toISOString().slice(0, 10);
+      studyDays[todayKey] = (studyDays[todayKey] || 0) + 1;
+      try { localStorage.setItem('cj2_study_days', JSON.stringify(studyDays)); } catch(e){}
+    }
+    var heatHtml = '';
+    for(var hi = 83; hi >= 0; hi--){
+      var hd = new Date(today);
+      hd.setDate(hd.getDate() - hi);
+      var hk = hd.toISOString().slice(0, 10);
+      var hv = studyDays[hk] || 0;
+      var hcls = hv === 0 ? '' : hv < 3 ? 'l1' : hv < 6 ? 'l2' : hv < 10 ? 'l3' : 'l4';
+      heatHtml += '<div class="heat-cell ' + hcls + '" title="' + hk + ': ' + hv + ' questoes"></div>';
+    }
+    var sHtml = '';
+    sHtml += '<div class="streak-card"><div class="streak-num">' + streak + '</div>';
+    sHtml += '<div class="streak-label">dias seguidos de estudo</div></div>';
+    sHtml += '<div class="card card-sm" style="margin-bottom:12px">';
+    sHtml += '<div style="font-size:12px;font-weight:600;color:var(--text3);margin-bottom:8px">ATIVIDADE (12 SEMANAS)</div>';
+    sHtml += '<div class="heat-map">' + heatHtml + '</div>';
+    sHtml += '<div style="display:flex;gap:4px;align-items:center;margin-top:6px;font-size:11px;color:var(--text3)">';
+    sHtml += 'Menos <div class="heat-cell"></div><div class="heat-cell l1"></div><div class="heat-cell l2"></div><div class="heat-cell l3"></div><div class="heat-cell l4"></div> Mais';
+    sHtml += '</div></div>';
+    streakEl.innerHTML = sHtml;
   }
-  // Marcar hoje como dia de estudo se resolveu questões
-  if(d.r > 0){
-    const todayKey = today.toISOString().slice(0,10);
-    studyDays[todayKey] = (studyDays[todayKey]||0) + 1;
-    localStorage.setItem('cj2_study_days', JSON.stringify(studyDays));
-  }
-  // Renderizar streak card
-  const streakEl = document.getElementById('desemp-streak');
-  if(streakEl) streakEl.innerHTML = `
-    <div class="streak-card">
-      <div class="streak-num">${streak}</div>
-      <div class="streak-label">🔥 dias seguidos de estudo</div>
-    </div>
-    <div class="card card-sm" style="margin-bottom:12px">
-      <div style="font-size:12px;font-weight:600;color:var(--text3);margin-bottom:8px">ATIVIDADE DOS ÚLTIMOS 12 SEMANAS</div>
-      <div class="heat-map">${(()=>{
-        const cells = [];
-        for(let i=83;i>=0;i--){
-          const d3=new Date(today); d3.setDate(d3.getDate()-i);
-          const k=d3.toISOString().slice(0,10);
-          const v=studyDays[k]||0;
-          const cls=v===0?'':v<3?'l1':v<6?'l2':v<10?'l3':'l4';
-          cells.push(`<div class="heat-cell ${cls}" title="${k}: ${v} questões"></div>`);
-        }
-        return cells.join('');
-      })()}</div>
-      <div style="display:flex;gap:4px;align-items:center;margin-top:6px;font-size:11px;color:var(--text3)">
-        Menos <div class="heat-cell"></div><div class="heat-cell l1"></div><div class="heat-cell l2"></div><div class="heat-cell l3"></div><div class="heat-cell l4"></div> Mais
-      </div>
-    </div>
-  `;
 }
-
 // ══════════════════════════════════════════
 // INIT RENDERS
 // ══════════════════════════════════════════
