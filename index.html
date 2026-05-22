@@ -99,6 +99,7 @@ input,select,textarea,button{font-family:inherit}
 input,select,textarea{background:var(--white);border:1.5px solid var(--border);border-radius:var(--radius-sm);padding:9px 13px;font-size:13px;color:var(--text);outline:none;transition:.15s;width:100%}
 input:focus,select:focus,textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(37,99,235,.1)}
 input[type="checkbox"],input[type="radio"]{width:auto;padding:0;border:none;background:none;flex-shrink:0;margin-top:2px}
+input[type="checkbox"],input[type="radio"]{width:auto;padding:0;border:none;background:none;flex-shrink:0;margin-top:2px}
 textarea{resize:vertical;min-height:80px}
 
 /* LAYOUT */
@@ -449,7 +450,41 @@ tr:hover td{background:var(--bg)}
 .dia-domingo{background:var(--bg)}
 .dia-domingo .dia-nome-planner{color:var(--green)}
 
+.turno-chip{display:flex;align-items:center;gap:6px;cursor:pointer;border:1.5px solid var(--border);border-radius:8px;padding:6px 12px;font-size:11px;font-weight:700;transition:.15s}
+.turno-chip:hover{border-color:var(--accent)}
+
+/* CHAT HISTORY */
+.chat-hist-sidebar{width:210px;min-width:210px;background:var(--white);border:1.5px solid var(--border);border-radius:var(--radius-lg);display:flex;flex-direction:column;overflow:hidden;flex-shrink:0}
+.chat-hist-top{padding:9px 11px;border-bottom:1.5px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.chat-hist-titulo{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--text3)}
+.chat-hist-new-btn{background:var(--accent);color:#fff;border:none;border-radius:6px;padding:3px 8px;font-size:10px;font-weight:700;cursor:pointer;transition:.15s}
+.chat-hist-new-btn:hover{opacity:.85}
+.chat-hist-search{padding:6px 9px;border-bottom:1px solid var(--border)}
+.chat-hist-search input{font-size:11px;padding:4px 8px;background:var(--bg);border-radius:5px;width:100%;box-sizing:border-box}
+.chat-hist-list{flex:1;overflow-y:auto;padding:4px}
+.chat-sess-item{padding:6px 8px;border-radius:6px;cursor:pointer;margin-bottom:2px;border:1.5px solid transparent;transition:.12s}
+.chat-sess-item:hover{background:var(--bg2)}
+.chat-sess-item.ativa{background:var(--accent-light);border-color:var(--accent)}
+.chat-sess-titulo{font-size:11px;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.chat-sess-meta{font-size:10px;color:var(--text3);margin-top:2px;display:flex;gap:4px}
+.chat-sess-tag{background:var(--accent-light);color:var(--accent);padding:1px 4px;border-radius:3px;font-size:9px;font-weight:700}
+.chat-hist-vazio{text-align:center;padding:18px 8px;color:var(--text3);font-size:11px;line-height:1.5}
+
+/* PDF VIEWER */
+.pdf-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:9999;align-items:center;justify-content:center}
+.pdf-overlay.open{display:flex}
+.pdf-modal{background:var(--white);border-radius:var(--radius-lg);width:88vw;max-width:860px;height:88vh;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.3)}
+.pdf-modal-head{padding:10px 16px;border-bottom:1.5px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.pdf-modal-title{font-size:13px;font-weight:700}
+.pdf-modal-close{background:none;border:none;cursor:pointer;color:var(--text3);font-size:22px;line-height:1;padding:2px 6px}
+.pdf-toolbar{padding:7px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;background:var(--bg);flex-wrap:wrap}
+.pdf-tbtn{background:var(--white);border:1.5px solid var(--border);border-radius:6px;padding:4px 9px;font-size:11px;font-weight:600;cursor:pointer;transition:.15s}
+.pdf-tbtn:hover{border-color:var(--accent);color:var(--accent)}
+.pdf-pinfo{font-size:11px;color:var(--text3)}
+.pdf-body{flex:1;overflow:auto;display:flex;justify-content:center;background:#e5e7eb;padding:16px}
+#pdfCanvas{max-width:100%;box-shadow:0 2px 20px rgba(0,0,0,.2)}
 </style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 </head>
 <body>
 
@@ -698,7 +733,15 @@ tr:hover td{background:var(--bg)}
 <!-- ═══════════════════════════════════════ AGENTE -->
 <div id="page-agente" class="page">
   <div class="topbar"><div><div class="topbar-title">Agente de IA</div><div class="topbar-sub">Assistente jurídico especializado em Procurador Municipal</div></div></div>
-  <div style="padding:20px 28px;height:calc(100vh - 65px);display:flex;gap:20px">
+  <div style="padding:16px 20px;height:calc(100vh - 65px);display:flex;gap:14px">
+    <div class="chat-hist-sidebar">
+      <div class="chat-hist-top">
+        <span class="chat-hist-titulo">Conversas</span>
+        <button class="chat-hist-new-btn" onclick="novaConversa()">+ Nova</button>
+      </div>
+      <div class="chat-hist-search"><input type="text" id="chatHistSearch" placeholder="Buscar..." oninput="filtrarSessoes(this.value)"/></div>
+      <div class="chat-hist-list" id="chatHistList"><div class="chat-hist-vazio">Nenhuma conversa.<br>Inicie um chat!</div></div>
+    </div>
     <div style="flex:1;display:flex;flex-direction:column;min-width:0">
       <div class="chat-wrap" style="height:100%">
         <div class="chat-head">
@@ -840,6 +883,42 @@ tr:hover td{background:var(--bg)}
 <div id="page-leis" class="page">
   <div class="topbar"><div><div class="topbar-title">Leis</div><div class="topbar-sub">Legislação essencial para Procurador Municipal</div></div></div>
   <div class="content">
+    <div class="card" style="margin-bottom:14px">
+      <div class="card-title">Leis Federais - Portal do Planalto</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px;margin:10px 0 12px">
+        <div style="background:var(--bg);border:1.5px solid var(--border);border-radius:var(--radius-lg);padding:11px">
+          <div style="font-size:10px;font-weight:800;text-transform:uppercase;color:var(--text3);margin-bottom:7px">Constituicao e Administracao</div>
+          <a href="https://www.planalto.gov.br/ccivil_03/constituicao/constituicao.htm" target="_blank" rel="noopener" style="display:block;font-size:11px;font-weight:600;color:var(--accent);padding:3px 0;border-bottom:1px solid var(--border);text-decoration:none">CF/88 - Constituicao Federal</a>
+          <a href="https://www.planalto.gov.br/ccivil_03/leis/l8112cons.htm" target="_blank" rel="noopener" style="display:block;font-size:11px;font-weight:600;color:var(--accent);padding:3px 0;border-bottom:1px solid var(--border);text-decoration:none">Lei 8.112/90 - Regime Juridico</a>
+          <a href="https://www.planalto.gov.br/ccivil_03/leis/l9784.htm" target="_blank" rel="noopener" style="display:block;font-size:11px;font-weight:600;color:var(--accent);padding:3px 0;text-decoration:none">Lei 9.784/99 - Proc. Administrativo</a>
+        </div>
+        <div style="background:var(--bg);border:1.5px solid var(--border);border-radius:var(--radius-lg);padding:11px">
+          <div style="font-size:10px;font-weight:800;text-transform:uppercase;color:var(--text3);margin-bottom:7px">Licitacoes e Probidade</div>
+          <a href="https://www.planalto.gov.br/ccivil_03/_ato2019-2022/2021/lei/l14133.htm" target="_blank" rel="noopener" style="display:block;font-size:11px;font-weight:600;color:var(--accent);padding:3px 0;border-bottom:1px solid var(--border);text-decoration:none">Lei 14.133/21 - Nova Licitacoes</a>
+          <a href="https://www.planalto.gov.br/ccivil_03/leis/l8429.htm" target="_blank" rel="noopener" style="display:block;font-size:11px;font-weight:600;color:var(--accent);padding:3px 0;border-bottom:1px solid var(--border);text-decoration:none">Lei 8.429/92 - Improbidade Adm.</a>
+          <a href="https://www.planalto.gov.br/ccivil_03/leis/l10520.htm" target="_blank" rel="noopener" style="display:block;font-size:11px;font-weight:600;color:var(--accent);padding:3px 0;text-decoration:none">Lei 10.520/02 - Pregao</a>
+        </div>
+        <div style="background:var(--bg);border:1.5px solid var(--border);border-radius:var(--radius-lg);padding:11px">
+          <div style="font-size:10px;font-weight:800;text-transform:uppercase;color:var(--text3);margin-bottom:7px">Transparencia e Fiscal</div>
+          <a href="https://www.planalto.gov.br/ccivil_03/leis/lcp/lcp101.htm" target="_blank" rel="noopener" style="display:block;font-size:11px;font-weight:600;color:var(--accent);padding:3px 0;border-bottom:1px solid var(--border);text-decoration:none">LRF - Lei Resp. Fiscal</a>
+          <a href="https://www.planalto.gov.br/ccivil_03/_ato2011-2014/2011/lei/l12527.htm" target="_blank" rel="noopener" style="display:block;font-size:11px;font-weight:600;color:var(--accent);padding:3px 0;border-bottom:1px solid var(--border);text-decoration:none">Lei 12.527/11 - Acesso Informacao</a>
+          <a href="https://www.planalto.gov.br/ccivil_03/leis/l5172compilado.htm" target="_blank" rel="noopener" style="display:block;font-size:11px;font-weight:600;color:var(--accent);padding:3px 0;text-decoration:none">CTN - Codigo Tributario</a>
+        </div>
+        <div style="background:var(--bg);border:1.5px solid var(--border);border-radius:var(--radius-lg);padding:11px">
+          <div style="font-size:10px;font-weight:800;text-transform:uppercase;color:var(--text3);margin-bottom:7px">Civil e Processo</div>
+          <a href="https://www.planalto.gov.br/ccivil_03/_ato2015-2018/2015/lei/l13105.htm" target="_blank" rel="noopener" style="display:block;font-size:11px;font-weight:600;color:var(--accent);padding:3px 0;border-bottom:1px solid var(--border);text-decoration:none">CPC 2015</a>
+          <a href="https://www.planalto.gov.br/ccivil_03/leis/2002/l10406compilada.htm" target="_blank" rel="noopener" style="display:block;font-size:11px;font-weight:600;color:var(--accent);padding:3px 0;border-bottom:1px solid var(--border);text-decoration:none">Codigo Civil</a>
+          <a href="https://www.planalto.gov.br/ccivil_03/decreto-lei/del5452.htm" target="_blank" rel="noopener" style="display:block;font-size:11px;font-weight:600;color:var(--accent);padding:3px 0;text-decoration:none">CLT</a>
+        </div>
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:6px">
+        <a href="https://www4.planalto.gov.br/legislacao/legis-federal" target="_blank" rel="noopener" style="background:var(--accent-light);color:var(--accent);padding:4px 10px;border-radius:20px;font-size:10px;font-weight:700;text-decoration:none">Portal Legis</a>
+        <a href="https://www4.planalto.gov.br/legislacao/portal-legis/legislacao-1/leis-ordinarias" target="_blank" rel="noopener" style="background:var(--accent-light);color:var(--accent);padding:4px 10px;border-radius:20px;font-size:10px;font-weight:700;text-decoration:none">Leis Ordinarias</a>
+        <a href="https://www4.planalto.gov.br/legislacao/portal-legis/legislacao-1/codigos-1" target="_blank" rel="noopener" style="background:var(--accent-light);color:var(--accent);padding:4px 10px;border-radius:20px;font-size:10px;font-weight:700;text-decoration:none">Codigos</a>
+        <a href="https://www4.planalto.gov.br/legislacao/portal-legis/legislacao-1/leis-complementares-1/todas-as-leis-complementares-1" target="_blank" rel="noopener" style="background:var(--accent-light);color:var(--accent);padding:4px 10px;border-radius:20px;font-size:10px;font-weight:700;text-decoration:none">Leis Complementares</a>
+        <a href="https://www4.planalto.gov.br/legislacao/portal-legis/legislacao-1/medidas-provisorias" target="_blank" rel="noopener" style="background:var(--accent-light);color:var(--accent);padding:4px 10px;border-radius:20px;font-size:10px;font-weight:700;text-decoration:none">Med. Provisorias</a>
+      </div>
+    </div>
     <div class="grid-aside">
       <div>
         <div class="card" style="margin-bottom:16px">
@@ -904,7 +983,13 @@ tr:hover td{background:var(--bg)}
             <button class="btn btn-primary btn-sm" onclick="addProva()" style="margin-left:auto">+ Salvar Prova</button>
           </div>
         </div>
-        <div style="display:flex;gap:8px;margin-bottom:14px"><select id="pv-fb" style="font-size:12px;padding:7px 10px;width:auto" onchange="renderProvas()"><option value="">Todas as bancas</option><option>FAFIPA</option><option>VUNESP</option><option>FGV</option><option>CESPE</option></select></div>
+        <div style="display:flex;gap:7px;margin-bottom:12px;flex-wrap:wrap;align-items:center">
+          <select id="pv-fb" style="font-size:12px;padding:5px 9px;width:auto" onchange="renderProvas()"><option value="">Todas as bancas</option><option>FAFIPA</option><option>VUNESP</option><option>FGV</option><option>CESPE</option><option>Outra</option></select>
+          <select id="pv-filter-ano" style="font-size:12px;padding:5px 9px;width:auto" onchange="renderProvas()"><option value="">Todos os anos</option><option>2024</option><option>2023</option><option>2022</option><option>2021</option><option>2020</option></select>
+          <select id="pv-filter-mat" style="font-size:12px;padding:5px 9px;width:auto" onchange="renderProvas()"><option value="">Todas as materias</option><option>Direito Administrativo</option><option>Direito Constitucional</option><option>Direito Municipal</option><option>Direito Civil</option><option>Processo Civil</option><option>Direito Tributario</option></select>
+          <span id="pv-count" style="font-size:11px;color:var(--text3);margin-left:auto"></span>
+        </div>
+        <div id="pv-list">
         <div id="pv-list"></div>
       </div>
       <div>
@@ -968,7 +1053,23 @@ tr:hover td{background:var(--bg)}
             <div class="form-group"><label class="form-label">Tipo de peça</label><select id="pc-tipo"><option value="">Selecione...</option><option value="parecer">Parecer Jurídico</option><option value="nota">Nota Técnica</option><option value="peticao">Petição Inicial</option><option value="contestacao">Contestação</option><option value="recurso">Recurso</option><option value="parecer_leg">Parecer Legislativo</option><option value="manifestacao">Manifestação</option><option value="controle">Controle de Legalidade</option></select></div>
             <div class="form-group"><label class="form-label">Matéria</label><select id="pc-mat"><option value="">Selecione...</option><option>Direito Administrativo</option><option>Direito Constitucional</option><option>Direito Municipal</option><option>Direito Civil</option><option>Processo Civil</option></select></div>
           </div>
+                    <div style="margin-bottom:10px">
+            <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;color:var(--text3);margin-bottom:5px">Templates prontos</div>
+            <div style="display:flex;gap:5px;flex-wrap:wrap">
+              <button class="btn btn-secondary btn-xs" onclick="usarTemplate('parecer')">Parecer</button>
+              <button class="btn btn-secondary btn-xs" onclick="usarTemplate('recurso')">Recurso</button>
+              <button class="btn btn-secondary btn-xs" onclick="usarTemplate('peticao')">Peticao</button>
+              <button class="btn btn-secondary btn-xs" onclick="usarTemplate('contestacao')">Contestacao</button>
+              <button class="btn btn-secondary btn-xs" onclick="usarTemplate('acp')">ACP</button>
+              <button class="btn btn-secondary btn-xs" onclick="usarTemplate('mandado')">Mandado</button>
+            </div>
+          </div>
           <div class="form-group" style="margin-bottom:12px"><label class="form-label">Caso Prático / Enunciado</label><textarea id="pc-caso" rows="5" placeholder="Cole aqui o caso prático ou enunciado..."></textarea></div>
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap">
+            <label class="btn btn-secondary btn-sm" style="cursor:pointer;display:inline-flex;align-items:center;gap:5px">Anexar PDF da questao<input type="file" id="pc-file" accept=".pdf,.txt" hidden onchange="handlePcFile(event)"/></label>
+            <span id="pc-fname" style="font-size:11px;color:var(--text3)"></span>
+          </div>
+          <textarea id="pc-pdf-text" style="display:none"></textarea>
           <div class="form-group" style="margin-bottom:14px"><label class="form-label">Sua Peça <span style="font-weight:400;text-transform:none;color:var(--text3)">(deixe em branco para gerar modelo)</span></label><textarea id="pc-resp" rows="6" placeholder="Cole sua peça aqui para receber correção e nota..."></textarea></div>
           <button class="btn btn-primary btn-full" onclick="processarPeca()">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/></svg>
@@ -1092,7 +1193,7 @@ tr:hover td{background:var(--bg)}
             </div>
           </div>
 
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:14px">
             <div class="form-group">
               <label class="form-label">Carga Horária Diária</label>
               <select id="cron-horas-dia" style="width:100%">
@@ -1109,6 +1210,32 @@ tr:hover td{background:var(--bg)}
                 <option value="0">Domingo (Recomendado)</option>
                 <option value="6">Sábado</option>
                 <option value="">Sem folga</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group" style="margin-bottom:14px">
+            <label class="form-label">Turnos Disponíveis para Estudo</label>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:6px">
+              <label class="turno-chip" id="chip-manha" style="border-color:var(--accent);background:var(--accent-light);color:var(--accent)"><input type="checkbox" id="turno-manha" checked onchange="toggleTurno('manha')"> Manhã</label>
+              <label class="turno-chip" id="chip-tarde" style="border-color:var(--accent);background:var(--accent-light);color:var(--accent)"><input type="checkbox" id="turno-tarde" checked onchange="toggleTurno('tarde')"> Tarde</label>
+              <label class="turno-chip" id="chip-noite"><input type="checkbox" id="turno-noite" onchange="toggleTurno('noite')"> Noite</label>
+            </div>
+            <div style="font-size:10px;color:var(--text3);margin-top:5px">Manhã = teoria | Tarde = leitura/revisão | Noite = questões</div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:14px">
+            <div class="form-group">
+              <label class="form-label">Máx. Matérias por Dia</label>
+              <select id="cron-max-mat" style="width:100%">
+                <option value="1">1 matéria (foco total)</option>
+                <option value="2" selected>2 matérias</option>
+                <option value="3">3 matérias</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Distribuição</label>
+              <select id="cron-distrib" style="width:100%">
+                <option value="ciclo" selected>Ciclo (rotação)</option>
+                <option value="sequencial">Sequencial</option>
               </select>
             </div>
           </div>
@@ -1567,25 +1694,67 @@ function addTyping(){
 }
 function removeTyping(){const el=document.getElementById('typing');if(el)el.remove();}
 
+// CHAT HISTORY
+let chatSessoes=JSON.parse(localStorage.getItem('cj2_sessoes')||'[]');
+let chatSessaoId=null;
+
+function salvarSessao(){
+  if(!chatSessaoId||chatHist.length===0)return;
+  const titulo=chatHist[0]?.content?.substring(0,50)||'Nova conversa';
+  const mats=['Constitucional','Administrativo','Municipal','Civil','Tributário','Penal','Processo'];
+  const fm=(chatHist[0]?.content||'').toLowerCase();
+  const materia=mats.find(m=>fm.includes(m.toLowerCase()))||'Geral';
+  const idx=chatSessoes.findIndex(s=>s.id===chatSessaoId);
+  const s={id:chatSessaoId,titulo,materia,data:new Date().toLocaleDateString('pt-BR'),msgs:JSON.parse(JSON.stringify(chatHist)),ts:Date.now()};
+  if(idx>=0)chatSessoes[idx]=s;else{chatSessoes.unshift(s);if(chatSessoes.length>50)chatSessoes.pop();}
+  localStorage.setItem('cj2_sessoes',JSON.stringify(chatSessoes));
+  renderSessoes();
+}
+function novaConversa(){
+  if(chatHist.length>0&&chatSessaoId)salvarSessao();
+  chatSessaoId='s'+Date.now();chatHist=[];
+  const m=document.getElementById('chatMsgs');
+  if(m)m.innerHTML='<div class="msg agent"><div class="msg-ava"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div><div class="msg-body"><div class="msg-bubble">Nova conversa! O que deseja estudar?</div><div class="msg-time">Agora</div></div></div>';
+  const qa=document.getElementById('quick-actions');if(qa)qa.style.display='';
+  renderSessoes();
+}
+function carregarSessao(id){
+  const s=chatSessoes.find(x=>x.id===id);if(!s)return;
+  if(chatHist.length>0&&chatSessaoId)salvarSessao();
+  chatSessaoId=id;chatHist=JSON.parse(JSON.stringify(s.msgs));
+  const m=document.getElementById('chatMsgs');if(!m)return;
+  m.innerHTML='';
+  chatHist.forEach(msg=>{if(msg.role==='user')addChatMsg('user',msg.content.replace(/</g,'&lt;'));else addChatMsg('agent',fmtIA(msg.content));});
+  const qa=document.getElementById('quick-actions');if(qa&&chatHist.length>0)qa.style.display='none';
+  renderSessoes();
+}
+function filtrarSessoes(q){renderSessoes(q);}
+function renderSessoes(filtro=''){
+  const el=document.getElementById('chatHistList');if(!el)return;
+  let lista=chatSessoes;
+  if(filtro)lista=lista.filter(s=>s.titulo.toLowerCase().includes(filtro.toLowerCase())||s.materia.toLowerCase().includes(filtro.toLowerCase()));
+  if(!lista.length){el.innerHTML='<div class="chat-hist-vazio">Nenhuma'+(filtro?' encontrada':'.<br>Inicie um chat!')+'</div>';return;}
+  el.innerHTML=lista.map(s=>'<div class="chat-sess-item '+(s.id===chatSessaoId?'ativa':'')+'" onclick="carregarSessao(''+s.id+'')"><div class="chat-sess-titulo">'+s.titulo.replace(/</g,'&lt;')+'</div><div class="chat-sess-meta"><span class="chat-sess-tag">'+s.materia+'</span><span>'+s.data+'</span></div></div>').join('');
+}
+
 async function sendChat(){
   const input=document.getElementById('chatIn');
-  const msg=input.value.trim(); if(!msg) return;
-  input.value=''; input.style.height='auto';
+  const msg=input.value.trim();if(!msg)return;
+  input.value='';input.style.height='auto';
   addChatMsg('user',msg.replace(/</g,'&lt;'));
   document.getElementById('chatSend').disabled=true;
   addTyping();
-  // Hide quick actions after first message
-  const qa=document.getElementById('quick-actions');
-  if(qa) qa.style.display='none';
+  const qa=document.getElementById('quick-actions');if(qa)qa.style.display='none';
+  if(!chatSessaoId)chatSessaoId='s'+Date.now();
   try{
     chatHist.push({role:'user',content:msg});
     const resp=await callClaude(msg);
-    removeTyping();
-    addChatMsg('agent',fmtIA(resp));
+    removeTyping();addChatMsg('agent',fmtIA(resp));
     chatHist.push({role:'assistant',content:resp});
+    salvarSessao();
   }catch(e){
     removeTyping();
-    if(!getKey()) addChatMsg('agent','⚠️ <strong>API não configurada.</strong> Vá em <strong>Configurações</strong> e insira sua chave de API para ativar o agente.');
+    if(!getKey())addChatMsg('agent','⚠️ <strong>API não configurada.</strong> Vá em <strong>Configurações</strong> e insira sua chave de API para ativar o agente.');
     else addChatMsg('agent','⚠️ Erro de conexão. Verifique sua chave de API em Configurações.');
   }
   document.getElementById('chatSend').disabled=false;
@@ -1612,12 +1781,10 @@ function handleAgFile(e){
 }
 
 function handleFile(mod,e){
-  const f=e.target.files[0]; if(!f) return;
+  const f=e.target.files[0];if(!f)return;
   document.getElementById(mod+'-fname').textContent=f.name;
-  readFile(f, content=>{
-    const ta=document.getElementById(mod==='ap'?'ap-conteudo':'pv-conteudo');
-    if(ta) ta.value=(ta.value?ta.value+'\n\n':'')+content.substring(0,6000);
-  });
+  if(f.type==='application/pdf'&&mod==='ap'){const rb=new FileReader();rb.onload=ev=>{window._pendPdf=ev.target.result;};rb.readAsDataURL(f);}
+  readFile(f,content=>{const ta=document.getElementById(mod==='ap'?'ap-conteudo':'pv-conteudo');if(ta)ta.value=(ta.value?ta.value+'\n\n':'')+content.substring(0,6000);});
 }
 
 function handleEdital(e){
@@ -1642,7 +1809,9 @@ function readFile(f,cb){
 function addApostila(){
   const titulo=document.getElementById('ap-titulo').value.trim();
   if(!titulo){document.getElementById('ap-titulo').focus();return;}
-  apostilas.unshift({id:Date.now(),titulo,materia:document.getElementById('ap-materia').value,tipo:document.getElementById('ap-tipo').value,conteudo:document.getElementById('ap-conteudo').value.trim(),data:new Date().toLocaleDateString('pt-BR')});
+  const _ap={id:Date.now(),titulo,materia:document.getElementById('ap-materia').value,tipo:document.getElementById('ap-tipo').value,conteudo:document.getElementById('ap-conteudo').value.trim(),data:new Date().toLocaleDateString('pt-BR')};
+  if(window._pendPdf){_ap.pdfBase64=window._pendPdf;window._pendPdf=null;}
+  apostilas.unshift(_ap);
   save('cj2_ap',apostilas);
   if(window.fbReady) window.fbSave('apostilas', apostilas[0]._id||apostilas[0].id, apostilas[0]);
   document.getElementById('ap-titulo').value='';document.getElementById('ap-conteudo').value='';document.getElementById('ap-fname').textContent='';
@@ -1657,7 +1826,7 @@ function renderApostilas(){
   // update select
   const sel=document.getElementById('ap-ia-sel');
   if(sel) sel.innerHTML='<option value="">— selecione —</option>'+apostilas.map(a=>`<option value="${a.id}">${a.titulo}</option>`).join('');
-  document.getElementById('ap-cnt').textContent=list.length+' material'+(list.length!==1?'is':'');
+  document.getElementById('ap-cnt').textContent=list.length+' '+(list.length!==1?'materiais':'material');
   if(!list.length){el.innerHTML=`<div class="card"><div class="empty-state"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>Nenhum material. Adicione acima.</div></div>`;return;}
   el.innerHTML=list.map(a=>`<div class="card card-sm" style="margin-bottom:10px">
     <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px">
@@ -1665,7 +1834,7 @@ function renderApostilas(){
         <div style="font-size:13px;font-weight:700;margin-bottom:4px">${a.titulo}</div>
         <div style="display:flex;gap:6px;flex-wrap:wrap"><span class="badge badge-blue">${a.materia}</span><span class="badge badge-gray">${a.tipo}</span><span style="font-size:10px;color:var(--text3)">${a.data}</span></div>
       </div>
-      <button class="btn btn-danger btn-xs" onclick="removeApostila(${a.id})">Del</button>
+${a.pdfBase64?'<button class="btn btn-secondary btn-xs" style="margin-right:4px" onclick="abrirPdf('+a.id+')">PDF</button>':''}      <button class="btn btn-danger btn-xs" onclick="removeApostila(${a.id})">Del</button>
     </div>
     ${a.conteudo?`<div style="font-size:11px;color:var(--text3);margin-top:8px;border-top:1px solid var(--border);padding-top:8px;line-height:1.5;max-height:48px;overflow:hidden">${a.conteudo.substring(0,200)}${a.conteudo.length>200?'…':''}</div>`:''}
   </div>`).join('');
@@ -1765,7 +1934,11 @@ function removeProva(id){provas=provas.filter(p=>p.id!==id);save('cj2_pv',provas
 
 function renderProvas(){
   const fb=document.getElementById('pv-fb')?.value||'';
-  const list=provas.filter(p=>!fb||p.banca===fb);
+  const fano=document.getElementById('pv-filter-ano')?.value||'';
+  const fmat=document.getElementById('pv-filter-mat')?.value||'';
+  const list=provas.filter(p=>(!fb||p.banca===fb)&&(!fano||String(p.ano)===fano)&&(!fmat||(p.conteudo||'').toLowerCase().includes(fmat.toLowerCase())));
+  const cnt=document.getElementById('pv-count');
+  if(cnt)cnt.textContent=list.length+' prova'+(list.length!==1?'s':'');
   const el=document.getElementById('pv-list'); if(!el) return;
   const sel=document.getElementById('pv-ia-sel');
   if(sel) sel.innerHTML='<option value="">— selecione —</option>'+provas.map(p=>`<option value="${p.id}">${p.banca} — ${p.cargo}${p.ano?' ('+p.ano+')':''}</option>`).join('');
@@ -1874,6 +2047,7 @@ async function processarPeca(){
   const materia=document.getElementById('pc-mat').value;
   const caso=document.getElementById('pc-caso').value.trim();
   const resp=document.getElementById('pc-resp').value.trim();
+  const pdfCtx=document.getElementById('pc-pdf-text')?.value||'';
   if(!caso){document.getElementById('pc-caso').focus();return;}
   const el=document.getElementById('pc-result');
   el.innerHTML=`<div class="ia-loading"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0"/></svg> Analisando com IA...</div>`;
@@ -2414,8 +2588,8 @@ function parseMateriasFallback(texto) {
   // Manual parse for common patterns
   const gerais = [];
   const especificos = [];
-  const geraisKeys = ['português','raciocínio','matemática','informática','redação','atualidades','conhecimentos gerais'];
-  const especKeys = ['constitucional','administrativo','civil','processual','tributário','financeiro','municipal','licitações','súmulas','regimento','penal','urbanístico','ambiental','previdenciário'];
+  const geraisKeys = ['português','lingua portuguesa','raciocínio lógico','matemática','informática','redação','atualidades','conhecimentos gerais','legislação básica'];
+  const especKeys = ['constitucional','administrativo','civil','processual civil','processo civil','tributário','financeiro','municipal','licitações','contratos','improbidade','probidade','previdenciário','penal','ambiental','urbanístico','trabalho','consumidor','eleitoral'];
 
   const lines = texto.split('\n');
   lines.forEach(line => {
@@ -2503,7 +2677,17 @@ function toggleMateria(tipo, idx) {
   renderMaterias();
 }
 
-function gerarCronogramaCompleto() {
+function toggleTurno(t){
+  const cb=document.getElementById('turno-'+t);
+  const chip=document.getElementById('chip-'+t);
+  if(chip){
+    chip.style.borderColor=cb?.checked?'var(--accent)':'var(--border)';
+    chip.style.background=cb?.checked?'var(--accent-light)':'';
+    chip.style.color=cb?.checked?'var(--accent)':'';
+  }
+}
+
+gerarCronogramaCompleto() {
   const inicio = document.getElementById('cron-data-inicio').value;
   const prova = document.getElementById('cron-data-prova').value;
   const horas = parseInt(document.getElementById('cron-horas-dia').value);
@@ -2556,16 +2740,21 @@ function gerarCronogramaCompleto() {
         semana.dias.push({nome:nomes[diaSemana], nomeCompleto:nomesCompletos[diaSemana], data:dataStr, descanso:true, itens:[]});
       } else {
         const itens = [];
-        // Add 2 topicos per day
-        for (let t = 0; t < 2; t++) {
+        const maxMat = parseInt(document.getElementById('cron-max-mat')?.value||'2');
+        const turnosAtivos = [];
+        if(document.getElementById('turno-manha')?.checked) turnosAtivos.push('manha');
+        if(document.getElementById('turno-tarde')?.checked) turnosAtivos.push('tarde');
+        if(document.getElementById('turno-noite')?.checked) turnosAtivos.push('noite');
+        for (let t = 0; t < maxMat; t++) {
           if (topicoQueue.length > 0) {
-            const item = topicoQueue[tIdx % topicoQueue.length];
+            const item = {...topicoQueue[tIdx % topicoQueue.length]};
+            if(turnosAtivos.length > 0) item.turno = turnosAtivos[t % turnosAtivos.length];
             tIdx++;
             itens.push(item);
           }
         }
-        // Add fixacao
-        itens.push({materia:'Bateria de Fixação', topico:'Resolver 10 questões da banca FAFIPA sobre os temas do dia', tipo:'fixacao'});
+        const turnoFix = turnosAtivos.includes('noite') ? 'noite' : (turnosAtivos[turnosAtivos.length-1]||'');
+        itens.push({materia:'Fixação', topico:'10 questões FAFIPA sobre os temas do dia', tipo:'fixacao', turno:turnoFix});
         semana.dias.push({nome:nomes[diaSemana], nomeCompleto:nomesCompletos[diaSemana], data:dataStr, descanso:false, itens});
       }
     }
@@ -2639,10 +2828,14 @@ function renderCronogramaPlanner() {
         const badgeClass = item.tipo==='geral'?'geral':item.tipo==='especifico'?'especifico':item.tipo==='fixacao'?'fixacao':'revisao';
         const badgeLabel = item.tipo==='fixacao'?'FIXAÇÃO':item.materia.length>18?item.materia.substring(0,16).toUpperCase()+'...':item.materia.toUpperCase();
         const textoItem = item.topico || item.detalhe || item.materia || '(item)';
-        return `<div class="dia-item-planner">
-          <input type="checkbox" ${done?'checked':''} onchange="cronToggleTask('${taskId}',this.checked)" style="margin-top:2px;accent-color:var(--accent);flex-shrink:0">
-          <span class="item-badge ${badgeClass}">${badgeLabel}</span>
-          <span class="item-text" style="${done?'text-decoration:line-through;color:var(--text3)':''}">${textoItem}</span>
+        const tIcon = item.turno==='manha'?'🌅 ':item.turno==='tarde'?'☀️ ':item.turno==='noite'?'🌙 ':'';
+        return `<div class="dia-item-planner" style="flex-direction:column;align-items:flex-start;padding:8px 12px">
+          <div style="display:flex;align-items:center;gap:6px;width:100%;margin-bottom:3px">
+            <input type="checkbox" ${done?'checked':''} onchange="cronToggleTask('${taskId}',this.checked)" style="accent-color:var(--accent);flex-shrink:0">
+            ${tIcon?'<span style="font-size:10px;color:var(--text3)">'+tIcon+'</span>':''}
+            <span class="item-badge ${badgeClass}" style="font-size:8px">${badgeLabel}</span>
+          </div>
+          <span class="item-text" style="font-size:11px;padding-left:20px;${done?'text-decoration:line-through;color:var(--text3)':''}">${textoItem}</span>
         </div>`;
       }).join('')}
     </div>`;
@@ -2688,7 +2881,66 @@ function exportarCronograma() {
   window.print();
 }
 
-// Init cronograma on load
+
+// ── PDF VIEWER ──
+let _pdfDoc=null,_pdfPage=1,_pdfScale=1.3;
+async function abrirPdf(id){
+  const ap=apostilas.find(a=>a.id===id);
+  if(!ap?.pdfBase64){showToast('PDF nao disponivel para esta apostila.','var(--amber)');return;}
+  document.getElementById('pdfModalTitle').textContent=ap.titulo;
+  document.getElementById('pdfOverlay').classList.add('open');
+  _pdfPage=1;_pdfScale=1.3;
+  if(typeof pdfjsLib==='undefined'){showToast('PDF.js nao carregado.','var(--amber)');return;}
+  pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+  try{
+    const b64=ap.pdfBase64.includes(',')?ap.pdfBase64.split(',')[1]:ap.pdfBase64;
+    const bin=atob(b64);const arr=new Uint8Array(bin.length);
+    for(let i=0;i<bin.length;i++)arr[i]=bin.charCodeAt(i);
+    _pdfDoc=await pdfjsLib.getDocument(arr).promise;
+    _renderPdf(_pdfPage);
+  }catch(e){showToast('Erro ao abrir PDF: '+e.message,'var(--red)');}
+}
+async function _renderPdf(n){
+  if(!_pdfDoc)return;
+  const p=await _pdfDoc.getPage(n);const c=document.getElementById('pdfCanvas');
+  const ctx=c.getContext('2d');const vp=p.getViewport({scale:_pdfScale});
+  c.height=vp.height;c.width=vp.width;
+  await p.render({canvasContext:ctx,viewport:vp}).promise;
+  document.getElementById('pdfPageInfo').textContent='p.'+n+'/'+_pdfDoc.numPages;
+}
+function pdfPrev(){if(_pdfPage>1){_pdfPage--;_renderPdf(_pdfPage);}}
+function pdfNext(){if(_pdfDoc&&_pdfPage<_pdfDoc.numPages){_pdfPage++;_renderPdf(_pdfPage);}}
+function pdfZoomIn(){_pdfScale=Math.min(_pdfScale+0.2,3);_renderPdf(_pdfPage);}
+function pdfZoomOut(){_pdfScale=Math.max(_pdfScale-0.2,0.5);_renderPdf(_pdfPage);}
+function fecharPdf(){document.getElementById('pdfOverlay').classList.remove('open');}
+
+// ── PECAS ──
+function handlePcFile(e){
+  const f=e.target.files[0];if(!f)return;
+  document.getElementById('pc-fname').textContent=f.name;
+  readFile(f,content=>{
+    const ta=document.getElementById('pc-pdf-text');if(ta)ta.value=content.substring(0,5000);
+    const caso=document.getElementById('pc-caso');if(caso&&!caso.value.trim())caso.value=content.substring(0,3000);
+  });
+}
+const TEMPLATES={
+  parecer:'MUNICIPIO DE [MUNICIPIO]\nPROCURADORIA GERAL DO MUNICIPIO\nPARECER JURIDICO N. [XX]/[ANO]\n\nINTERESSADO: [Nome]\nASSUNTO: [Assunto]\n\nI - RELATORIO\n[Descreva os fatos e o pedido]\n\nII - FUNDAMENTACAO JURIDICA\n[Dispositivos legais: CF/88, leis municipais, jurisprudencia]\n\nIII - CONCLUSAO\nAnte o exposto, opino que [conclusao].\n\n[Municipio], [data].\n\n[Nome do Procurador]\nProcurador(a) Municipal',
+  recurso:'EXMO. SR. [Destinatario]\n\n[Recorrente] vem interpor\n\nRECURSO [TIPO]\n\nI - DOS FATOS\n[Relatar os fatos]\n\nII - DO DIREITO\n[Fundamentacao juridica]\n\nIII - DO PEDIDO\nRequer o provimento do recurso para que [pedido].\n\n[Municipio], [data].',
+  peticao:'EXMO. SR. DR. JUIZ DA [VARA]\n\n[Requerente] vem propor\n\nACAO [TIPO]\n\nI - DOS FATOS\n[Descrever os fatos]\n\nII - DO DIREITO\n[Fundamentacao]\n\nIII - DOS PEDIDOS\nRequer: a) [pedido 1]; b) [pedido 2].\n\nValor da causa: R$ [valor]\n[Municipio], [data].',
+  contestacao:'EXMO. SR. DR. JUIZ DA [VARA]\n\nMUNICIPIO DE [MUNICIPIO], por seu Procurador, vem apresentar\n\nCONTESTACAO\n\nI - PRELIMINARES\n[Ilegitimidade, prescricao etc.]\n\nII - MERITO\n[Rebater os fatos e argumentos]\n\nIII - PEDIDO\nRequer seja julgado improcedente.\n\n[Municipio], [data].',
+  acp:'EXMO. SR. DR. JUIZ DA [VARA]\n\n[Legitimado ativo] vem propor\n\nACAO CIVIL PUBLICA (Lei 7.347/85)\n\nI - DA LEGITIMIDADE\n[Fundamentar]\n\nII - DOS FATOS E DANO\n[Descrever fatos e dano ao interesse publico]\n\nIII - DO PEDIDO\nRequer: a) Liminar para [medida]; b) Condenacao em [obrigacao].\n\n[Municipio], [data].',
+  mandado:'EXMO. SR. DR. JUIZ DA [VARA]\n\n[Impetrante] impetrar\n\nMANDADO DE SEGURANCA (CF art. 5 LXIX, Lei 12.016/2009)\n\nI - DO ATO COATOR\n[Descrever o ato ilegal]\n\nII - DO DIREITO LIQUIDO E CERTO\n[Demonstrar o direito]\n\nIII - DO PEDIDO\nRequer liminar e, ao final, segurança para [pedido].\n\n[Municipio], [data].'
+};
+function usarTemplate(tipo){
+  const tpl=TEMPLATES[tipo];
+  if(tpl){document.getElementById('pc-resp').value=tpl;showToast('Template carregado! Personalize conforme o caso.');}
+}
+
+// ── INIT ──
+// Init sessoes chat
+  if(typeof renderSessoes==="function") renderSessoes();
+
+  // Init cronograma on load
 document.addEventListener('DOMContentLoaded', () => {
   if (cronState.materias_gerais) renderMaterias();
   if (cronState.data_inicio) {
@@ -2700,4 +2952,9 @@ document.addEventListener('DOMContentLoaded', () => {
   updateCronProgress();
 });
 
+
+</script>
+
+<!-- PDF MODAL -->
+<div class="pdf-overlay" id="pdfOverlay" onclick="if(event.target===this)fecharPdf()"><div class="pdf-modal"><div class="pdf-modal-head"><span class="pdf-modal-title" id="pdfModalTitle">Visualizar PDF</span><button class="pdf-modal-close" onclick="fecharPdf()">&#215;</button></div><div class="pdf-toolbar"><button class="pdf-tbtn" onclick="pdfPrev()">&#9664; Anterior</button><span class="pdf-pinfo" id="pdfPageInfo">p. 1/1</span><button class="pdf-tbtn" onclick="pdfNext()">Proxima &#9654;</button><button class="pdf-tbtn" onclick="pdfZoomIn()">Zoom+</button><button class="pdf-tbtn" onclick="pdfZoomOut()">Zoom-</button></div><div class="pdf-body"><canvas id="pdfCanvas"></canvas></div></div></div>
 </script>
