@@ -68,23 +68,116 @@
         window.fbReady = true;
         const apiDot = document.querySelector('.api-dot');
         if (apiDot) apiDot.classList.add('on');
+        // ... final da função carregarDoFirebase ...
+    };
+
+    // Inicialização robusta: aguarda o documento estar pronto
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', () => window.carregarDoFirebase());
+    } else {
+      window.carregarDoFirebase();
+    }
+  </script> }; // Aguarda app carregar e sincroniza
+    document.addEventListener('DOMContentLoaded', () => {
+      setTimeout(window.carregarDoFirebase, 800);
+    });
+  </script> ```
+Há chaves `};` soltas fora de qualquer tag, um código duplicado tentando chamar a mesma função duas vezes e duas tags `</script>` sobrepostas. O navegador tenta ler isso, sofre um colapso de sintaxe e **trava o site inteiro instantaneamente**.
+
+---
+
+### 🛠️ A Correção Definitiva e Limpa
+
+Para resolver isso de uma vez por todas, abra o seu ficheiro `index (2).html` e vá **exatamente da linha 8 até a linha 87** (o topo do documento). 
+
+Apague tudo o que estiver entre a abertura `<script type="module">` e o `<link rel="preconnect"...>` e substitua por este bloco único, limpo e blindado contra erros:
+
+```html
+  <script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+    import { getFirestore, collection, doc, setDoc, getDocs, deleteDoc, query, orderBy } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCp43BC60QMds6EJPDlKU2tNsMEzy87RJg",
+      authDomain: "iaconcurso.firebaseapp.com",
+      projectId: "iaconcurso",
+      storageBucket: "iaconcurso.firebasestorage.app",
+      messagingSenderId: "358319536722",
+      appId: "1:358319536722:web:062512e44eb406df62fd8b"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    // 1. BLINDAGEM DE EMERGENGIA: Inicializa as variáveis imediatamente para os cliques nunca travarem
+    window.apostilas = [];
+    window.leis = [];
+    window.provas = [];
+    window.fbReady = false;
+
+    // Métodos Firebase injetados com segurança no escopo global
+    window.fbSave = async (colecao, id, dados) => {
+      try {
+        await setDoc(doc(db, colecao, String(id)), { ...dados, _id: String(id) });
+        return true;
+      } catch(e) { console.error('fbSave erro:', e); return false; }
+    };
+
+    window.fbDelete = async (colecao, id) => {
+      try {
+        await deleteDoc(doc(db, colecao, String(id)));
+        return true;
+      } catch(e) { console.error('fbDelete erro:', e); return false; }
+    };
+
+    window.fbLoad = async (colecao) => {
+      try {
+        const snap = await getDocs(collection(db, colecao));
+        return snap.docs.map(d => d.data());
+      } catch(e) { console.error('fbLoad erro:', e); return []; }
+    };
+
+    // 2. FUNÇÃO DE CARREGAMENTO PRINCIPAL
+    window.carregarDoFirebase = async () => {
+      try {
+        console.log('Sincronizando banco de dados...');
+        const [aps, ls, pvs] = await Promise.all([
+          window.fbLoad('apostilas'),
+          window.fbLoad('leis'),
+          window.fbLoad('provas'),
+        ]);
+        
+        window.apostilas = aps.length ? aps.sort((a,b)=>Number(b._id)-Number(a._id)) : [];
+        window.leis = ls.length ? ls.sort((a,b)=>Number(b._id)-Number(a._id)) : [];
+        window.provas = pvs.length ? pvs.sort((a,b)=>Number(b._id)-Number(a._id)) : [];
+
+        // Ativa os elementos visuais de sucesso da API
+        window.fbReady = true;
+        const apiDot = document.querySelector('.api-dot');
+        if (apiDot) apiDot.classList.add('on');
         const apiVal = document.querySelector('.api-val');
         if (apiVal) apiVal.textContent = 'Conectado';
 
-        console.log('✓ Firebase carregado com sucesso!');
+        console.log('✓ Banco de dados sincronizado com sucesso!');
       } catch(e) { 
-        console.error('Aviso: Falha de conexão com a API. Rodando em modo local estável.', e); 
+        console.error('Aviso: Operando em modo de segurança local.', e); 
       } finally {
-        // ESSENCIAL: Atualiza a interface de qualquer forma para destravar todos os menus e cliques
+        // Força a atualização da interface para libertar a navegação em qualquer cenário
         if(typeof renderApostilas === 'function') renderApostilas();
         if(typeof renderLeis === 'function') renderLeis();
         if(typeof renderProvas === 'function') renderProvas();
+        if(typeof renderHome === 'function') renderHome();
         if(typeof renderConfigPage === 'function') renderConfigPage();
       }
     };
 
-    // Inicializa o processo de carregamento imediatamente
+    // Inicialização direta e sem duplicações
     if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', () => window.carregarDoFirebase());
+    } else {
+      window.carregarDoFirebase();
+    }
+  </script>
       document.addEventListener('DOMContentLoaded', () => window.carregarDoFirebase());
     } else {
       window.carregarDoFirebase();
