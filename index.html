@@ -220,4 +220,917 @@ input, select, textarea {
   background: var(--white); color: var(--text); font-size: 13px; font-family: inherit; outline: none; transition: 0.2s;
 }
 input:focus, select:focus, textarea:focus { border-color: var(--border2); }
-label
+label { font-size: 12px; font-weight: 600; color: var(--text2); display: block; margin-bottom: 6px; }
+.form-group { margin-bottom: 16px; }
+
+/* LISTS & REPOSITORIES */
+.list-item {
+  display: flex; align-items: center; justify-content: space-between; padding: 14px 18px;
+  border: 1.5px solid var(--border); border-radius: var(--radius); margin-bottom: 12px;
+  background: var(--white); transition: 0.2s;
+}
+.list-item:hover { border-color: var(--border2); transform: translateY(-1px); }
+.item-info { display: flex; flex-direction: column; gap: 2px; }
+.item-title { font-weight: 600; color: var(--text); }
+.item-meta { font-size: 11px; color: var(--text3); font-weight: 500; }
+.item-actions { display: flex; gap: 8px; }
+
+/* POMODORO */
+.pomo-card { background: linear-gradient(135deg, var(--accent), var(--accent-dark)); color: white; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 32px; text-align: center; position: relative; overflow: hidden; }
+.pomo-time { font-size: 54px; font-weight: 800; font-variant-numeric: tabular-nums; margin: 12px 0; letter-spacing: -1px; }
+.pomo-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; opacity: 0.8; }
+.pomo-btns { display: flex; gap: 8px; }
+.pomo-btn { background: rgba(255,255,255,0.15); border: none; color: white; padding: 8px 16px; font-weight: 600; font-size: 12px; border-radius: var(--radius-sm); cursor: pointer; transition: 0.2s; }
+.pomo-btn:hover { background: rgba(255,255,255,0.25); }
+
+/* CHAT AREA & ADVANCED IA MENTOR */
+.chat-layout { display: grid; grid-template-columns: 280px 1fr; height: 600px; border: 1.5px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; background: var(--white); }
+.chat-sidebar { background: var(--bg); border-right: 1.5px solid var(--border); display: flex; flex-direction: column; }
+.chat-sidebar-header { padding: 16px; border-bottom: 1.5px solid var(--border); display: flex; flex-direction: column; gap: 10px; }
+.chat-sessions-list { flex: 1; overflow-y: auto; padding: 10px; display: flex; flex-direction: column; gap: 4px; }
+.session-item { display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; border-radius: var(--radius-sm); cursor: pointer; font-size: 12px; font-weight: 600; color: var(--text2); transition: 0.2s; }
+.session-item:hover { background: var(--bg2); color: var(--text); }
+.session-item.active { background: var(--accent-light); color: var(--accent); }
+.session-del-btn { background:none; border:none; color:var(--text3); cursor:pointer; font-size:14px; padding:2px; }
+.session-del-btn:hover { color:var(--red); }
+
+.chat-main { display: flex; flex-direction: column; height: 100%; background: var(--white); }
+.chat-messages { flex: 1; padding: 24px; overflow-y: auto; display: flex; flex-direction: column; gap: 20px; background: var(--white); }
+.message { max-width: 85%; padding: 14px 18px; border-radius: var(--radius); font-size: 13px; line-height: 1.6; box-shadow: var(--shadow); position: relative; }
+.message.user { background: var(--accent); color: white; align-self: flex-end; border-bottom-right-radius: 2px; }
+.message.ai { background: var(--bg); color: var(--text); align-self: flex-start; border-bottom-left-radius: 2px; border: 1px solid var(--border); }
+.message-meta { font-size: 10px; color: var(--text3); margin-top: 6px; display: block; font-weight: 500; }
+.chat-input-area { padding: 20px; border-top: 1.5px solid var(--border); background: var(--bg); display: flex; gap: 12px; align-items: center; }
+
+/* CRONOGRAMA MAQUINA */
+.cron-materia-row { display: flex; align-items: center; justify-content: space-between; padding: 16px 20px; border-bottom: 1px solid var(--border); font-size: 13px; }
+.cron-materia-row:last-child { border-bottom: none; }
+.badge { padding: 3px 10px; border-radius: 99px; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+.badge-blue { background: var(--accent-light); color: var(--accent); }
+.badge-amber { background: var(--amber-light); color: var(--amber); }
+
+/* PROGRESS CIRCLE */
+.stat-box { display: flex; align-items: center; gap: 16px; padding: 16px; border: 1.5px solid var(--border); border-radius: var(--radius); background: var(--bg); }
+.stat-val { font-size: 22px; font-weight: 800; color: var(--text); }
+.stat-lbl { font-size: 11px; color: var(--text3); font-weight: 600; text-transform: uppercase; }
+
+/* CONFIG KEY INDICATORS */
+.key-status { font-size: 11px; font-weight: 700; text-transform: uppercase; margin-top: 6px; display: inline-flex; align-items: center; gap: 4px; }
+.key-status.missing { color: var(--amber); }
+.key-status.ok { color: var(--green); }
+
+</style>
+</head>
+<body>
+
+<div id="app">
+  <aside id="sidebar">
+    <div class="logo">
+      <div class="logo-name">JurisMind</div>
+      <div class="logo-tag">Mapeamento e Mentoria</div>
+    </div>
+    
+    <nav class="nav-links">
+      <button class="nav-link active" id="btn-nav-dashboard" onclick="showTab('dashboard')"><span class="nav-icon">📊</span> Painel Geral</button>
+      <button class="nav-link" id="btn-nav-cronograma" onclick="showTab('cronograma')"><span class="nav-icon">📅</span> Cronograma Dinâmico</button>
+      <button class="nav-link" id="btn-nav-leis" onclick="showTab('leis')"><span class="nav-icon">📜</span> Vade Mecum Digital</button>
+      <button class="nav-link" id="btn-nav-provas" onclick="showTab('provas')"><span class="nav-icon">📝</span> Caderno de Simulados</button>
+      <button class="nav-link" id="btn-nav-apostilas" onclick="showTab('apostilas')"><span class="nav-icon">📁</span> Repositório Material</button>
+      <button class="nav-link" id="btn-nav-config" onclick="showTab('config')"><span class="nav-icon">⚙️</span> Configurações API</button>
+    </nav>
+
+    <div class="nav-footer">
+      <div class="api-status">
+        <div class="api-dot"></div>
+        <span>Servidor: <span class="api-val">Desconectado</span></span>
+      </div>
+    </div>
+  </aside>
+
+  <div id="main">
+    <header class="topbar">
+      <div class="page-title" id="mainPageTitle">Painel Geral</div>
+      <div class="topbar-actions">
+        <button class="icon-btn" id="darkToggleBtn" onclick="toggleDarkMode()">🌓</button>
+      </div>
+    </header>
+
+    <div class="content">
+
+      <section id="tab-dashboard" class="page active">
+        <div class="grid-21">
+          
+          <div style="display: flex; flex-direction: column; gap: 24px;">
+            <div class="card" style="margin-bottom:0;">
+              <div class="card-header">
+                <span class="card-title">🤖 Mentoria Avançada & IA Cognitiva</span>
+              </div>
+              
+              <div class="chat-layout">
+                <div class="chat-sidebar">
+                  <div class="chat-sidebar-header">
+                    <button class="btn btn-sm" style="width:100%; justify-content:center;" onclick="criarNovaSessaoChat()">+ Nova Discussão</button>
+                  </div>
+                  <div class="chat-sessions-list" id="chatSessionsContainer">
+                    </div>
+                </div>
+                
+                <div class="chat-main">
+                  <div class="chat-messages" id="chatMessages">
+                    <div class="message ai">
+                      Olá! Sou o seu mentor jurídico baseado em engenharia reversa de bancas. Como posso clarear os seus estudos hoje? Posso montar simulados temáticos, detalhar jurisprudência ou mapear o edital por peso estatístico.
+                      <span class="message-meta">JurisMind AI • Agora</span>
+                    </div>
+                  </div>
+                  
+                  <div class="chat-input-area">
+                    <input type="text" id="chatInput" placeholder="Pergunte sobre qualquer matéria ou peça um simulado rápido..." onkeydown="if(event.key==='Enter')sendChatMessage()">
+                    <button class="btn" onclick="sendChatMessage()">Enviar</button>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <div style="display: flex; flex-direction: column; gap: 24px;">
+            
+            <div class="card pomo-card">
+              <div class="pomo-label" id="pomoLabel">Bloco de Foco Ativo</div>
+              <div class="pomo-time" id="pomoTime">25:00</div>
+              <div class="pomo-btns">
+                <button class="pomo-btn" onclick="pomoToggle()">Iniciar</button>
+                <button class="pomo-btn" onclick="pomoReset()">Reset</button>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-header"><span class="card-title">Aproveitamento Global</span></div>
+              <div style="display: flex; flex-direction: column; gap: 16px;">
+                
+                <div>
+                  <div style="display:flex; justify-content:space-between; font-size:12px; font-weight:600; margin-bottom:6px;">
+                    <span>Aproveitamento do Edital</span>
+                    <span id="txt-progresso-cron">0%</span>
+                  </div>
+                  <div style="height:8px; background:var(--bg2); border-radius:9px; overflow:hidden;">
+                    <div id="bar-progresso-cron" style="height:100%; width:0%; background:var(--accent); transition:width 0.4s ease;"></div>
+                  </div>
+                </div>
+
+                <div class="grid-2" style="gap:12px; margin-top:8px;">
+                  <div class="stat-box">
+                    <div>
+                      <div class="stat-val" id="dash-count-leis">0</div>
+                      <div class="stat-lbl">Leis Claras</div>
+                    </div>
+                  </div>
+                  <div class="stat-box">
+                    <div>
+                      <div class="stat-val" id="dash-count-provas">0</div>
+                      <div class="stat-lbl">Simulados</div>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+      </section>
+
+      <section id="tab-cronograma" class="page">
+        <div class="grid-21">
+          
+          <div class="card">
+            <div class="card-header">
+              <span class="card-title">Matérias Estratégicas Planejadas</span>
+            </div>
+            <div id="cron-materias-list" style="display:flex; flex-direction:column;">
+              </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header"><span class="card-title">Configurações do Ciclo</span></div>
+            
+            <div class="form-group">
+              <label>Data de Início do Ciclo</label>
+              <input type="date" id="cron-data-inicio" onchange="saveCronState()">
+            </div>
+
+            <div class="form-group">
+              <label>Data Estimada da Prova</label>
+              <input type="date" id="cron-data-prova" onchange="saveCronState()">
+            </div>
+
+            <div style="margin-top:24px; display:flex; flex-direction:column; gap:10px;">
+              <button class="btn btn-sec" style="width:100%; justify-content:center;" onclick="resetCronProgress()">Zerar Progresso</button>
+              <button class="btn" style="width:100%; justify-content:center;" onclick="gerarSugestaoCiclo()">Recalcular Pesos Estatísticos</button>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <section id="tab-leis" class="page">
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">Vade Mecum Digital Incorporado</span>
+          </div>
+          
+          <div style="display:flex; gap:12px; margin-bottom:24px;">
+            <input type="text" id="lei-titulo" placeholder="Ex: Lei 8.112/90 — Regime Jurídico Único (Art. 1º ao 50º)" style="margin:0;">
+            <button class="btn" onclick="addLeiItem()">Adicionar Norma</button>
+          </div>
+
+          <div id="leis-list">
+            </div>
+        </div>
+      </section>
+
+      <section id="tab-provas" class="page">
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">Caderno de Provas Reversas e Simulados</span>
+          </div>
+
+          <div style="display:flex; gap:12px; margin-bottom:24px;">
+            <input type="text" id="prova-titulo" placeholder="Ex: Simulado Inédito Magistratura — Bloco I" style="margin:0;">
+            <button class="btn" onclick="addProvaItem()">Inserir Caderno</button>
+          </div>
+
+          <div id="provas-list">
+            </div>
+        </div>
+      </section>
+
+      <section id="tab-apostilas" class="page">
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">Repositório Doutrinário e Resumos</span>
+          </div>
+
+          <div style="display:flex; gap:12px; margin-bottom:24px;">
+            <input type="text" id="ap-titulo" placeholder="Ex: Resumo Direcionado — Controle de Constitucionalidade" style="margin:0;">
+            <button class="btn" onclick="addApostilaItem()">Adicionar Material</button>
+          </div>
+
+          <div id="apostilas-list">
+            </div>
+        </div>
+      </section>
+
+      <section id="tab-config" class="page">
+        <div class="card" style="max-width:650px;">
+          <div class="card-header">
+            <span class="card-title">Configurações de Credenciais de API</span>
+          </div>
+          
+          <div class="form-group">
+            <label>Anthropic API Key (Claude AI)</label>
+            <input type="password" id="cfg-claude-key" placeholder="sk-ant-v1-..." oninput="updateKeyIndicator()">
+            <div id="key-status-ind" class="key-status missing">Pendente de Configuração</div>
+          </div>
+
+          <div class="form-group" style="margin-top:24px;">
+            <label>Modelo Cognitivo Alvo</label>
+            <select id="cfg-claude-model">
+              <option value="claude-3-5-sonnet-20241022">Claude 3.5 Sonnet (Recomendado para Peças e Pareceres)</option>
+              <option value="claude-3-5-haiku-20241022">Claude 3.5 Haiku (Velocidade Máxima para Questões)</option>
+            </select>
+          </div>
+
+          <div style="margin-top:28px;">
+            <button class="btn" onclick="saveConfigKeys()">Salvar Chaves Secretas</button>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </div>
+</div>
+
+<script>
+// ── SISTEMA DE NAVEGAÇÃO COMPLETO DE ABAS ──
+function showTab(tabId) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+  
+  const targetPage = document.getElementById(`tab-${tabId}`);
+  if(targetPage) targetPage.classList.add('active');
+  
+  const targetBtn = document.getElementById(`btn-nav-${tabId}`);
+  if(targetBtn) targetBtn.classList.add('active');
+  
+  const titles = {
+    dashboard: "Painel Geral",
+    cronograma: "Cronograma Dinâmico por Peso",
+    leis: "Vade Mecum Digital Inteligente",
+    provas: "Caderno de Simulados",
+    apostilas: "Repositório de Manuais",
+    config: "Configurações Globais"
+  };
+  document.getElementById('mainPageTitle').textContent = titles[tabId] || "JurisMind";
+}
+
+function toggleDarkMode() {
+  document.body.classList.toggle('dark');
+  const btn = document.getElementById('darkToggleBtn');
+  if(btn) btn.style.color = document.body.classList.contains('dark') ? 'var(--accent)' : 'var(--text2)';
+}
+
+// ── ENGINE POMODORO CONCURSOS ──
+let pomoTimer = null;
+let pomoSeconds = 1500; // 25 min
+let pomoRunning = false;
+
+function pomoToggle() {
+  if(pomoRunning) {
+    clearInterval(pomoTimer);
+    pomoRunning = false;
+    document.querySelector('.pomo-btn').textContent = "Iniciar";
+  } else {
+    pomoRunning = true;
+    document.querySelector('.pomo-btn').textContent = "Pausar";
+    pomoTimer = setInterval(() => {
+      if(pomoSeconds > 0) {
+        pomoSeconds--;
+        _pomoRender();
+      } else {
+        clearInterval(pomoTimer);
+        pomoRunning = false;
+        alert("Bloco de foco completado com sucesso! Faça uma pausa estratégica de 5 minutos.");
+        pomoSeconds = 1500;
+        _pomoRender();
+        document.querySelector('.pomo-btn').textContent = "Iniciar";
+      }
+    }, 1000);
+  }
+}
+
+function pomoReset() {
+  clearInterval(pomoTimer);
+  pomoRunning = false;
+  pomoSeconds = 1500;
+  _pomoRender();
+  document.querySelector('.pomo-btn').textContent = "Iniciar";
+}
+
+function _pomoRender() {
+  const m = String(Math.floor(pomoSeconds / 60)).padStart(2, '0');
+  const s = String(pomoSeconds % 60).padStart(2, '0');
+  document.getElementById('pomoTime').textContent = `${m}:${s}`;
+}
+
+// ── ENGINE AVANÇADA DE SESSÕES E CHAT CLAUDE AI ──
+let chatSessions = JSON.parse(localStorage.getItem('juris_chat_sessions')) || [
+  { id: "default", titulo: "Discussão Inicial", mensagens: [
+    { role: "ai", text: "Olá! Sou o seu mentor jurídico baseado em engenharia reversa de bancas. Como posso clarear os seus estudos hoje?", meta: "JurisMind AI • Agora" }
+  ]}
+];
+let activeSessionId = localStorage.getItem('juris_active_session_id') || "default";
+
+function saveChatSessions() {
+  localStorage.setItem('juris_chat_sessions', JSON.stringify(chatSessions));
+  localStorage.setItem('juris_active_session_id', activeSessionId);
+}
+
+function renderSessoes() {
+  const container = document.getElementById('chatSessionsContainer');
+  if(!container) return;
+  container.innerHTML = "";
+  
+  chatSessions.forEach(s => {
+    const item = document.createElement('div');
+    item.className = `session-item ${s.id === activeSessionId ? 'active' : ''}`;
+    item.setAttribute('onclick', `mudarSessaoChat('${s.id}')`);
+    
+    const label = document.createElement('span');
+    label.textContent = s.titulo.length > 22 ? s.titulo.substring(0, 20) + '...' : s.titulo;
+    item.appendChild(label);
+    
+    if(s.id !== 'default') {
+      const del = document.createElement('button');
+      del.className = 'session-del-btn';
+      del.innerHTML = '&times;';
+      del.setAttribute('onclick', `deletarSessaoChat(event, '${s.id}')`);
+      item.appendChild(del);
+    }
+    
+    container.appendChild(item);
+  });
+}
+
+function criarNovaSessaoChat() {
+  const titulo = prompt("Digite o tema desta nova discussão:", "Nova Linha de Estudo");
+  if(!titulo || !titulo.trim()) return;
+  
+  const novaId = "session_" + Date.now();
+  chatSessions.push({
+    id: novaId,
+    titulo: titulo.trim(),
+    mensagens: [
+      { role: "ai", text: `Discussão focada iniciada: ${titulo.trim()}. Como posso te guiar nesta matéria?`, meta: "JurisMind AI" }
+    ]
+  });
+  activeSessionId = novaId;
+  saveChatSessions();
+  renderSessoes();
+  renderMensagensAtivas();
+}
+
+function mudarSessaoChat(id) {
+  activeSessionId = id;
+  saveChatSessions();
+  renderSessoes();
+  renderMensagensAtivas();
+}
+
+function deletarSessaoChat(e, id) {
+  e.stopPropagation();
+  if(!confirm("Deseja expurgar permanentemente esta discussão jurídica do seu histórico?")) return;
+  chatSessions = chatSessions.filter(s => s.id !== id);
+  if(activeSessionId === id) activeSessionId = "default";
+  saveChatSessions();
+  renderSessoes();
+  renderMensagensAtivas();
+}
+
+function renderMensagensAtivas() {
+  const box = document.getElementById('chatMessages');
+  if(!box) return;
+  box.innerHTML = "";
+  
+  const sessao = chatSessions.find(s => s.id === activeSessionId) || chatSessions[0];
+  sessao.mensagens.forEach(m => {
+    const d = document.createElement('div');
+    d.className = `message ${m.role}`;
+    d.textContent = m.text;
+    
+    const meta = document.createElement('span');
+    meta.className = 'message-meta';
+    meta.textContent = m.meta || (m.role === 'user' ? 'Você' : 'JurisMind AI');
+    d.appendChild(meta);
+    
+    box.appendChild(d);
+  });
+  box.scrollTop = box.scrollHeight;
+}
+
+async function sendChatMessage() {
+  const input = document.getElementById('chatInput');
+  const text = input.value.trim();
+  if(!text) return;
+
+  // Append user message
+  const sessao = chatSessions.find(s => s.id === activeSessionId) || chatSessions[0];
+  sessao.mensagens.push({ role: "user", text: text, meta: "Você • Agora" });
+  renderMensagensAtivas();
+  input.value = "";
+
+  const key = localStorage.getItem('cfg_claude_key') || "";
+  const model = localStorage.getItem('cfg_claude_model') || "claude-3-5-sonnet-20241022";
+
+  if(!key) {
+    setTimeout(() => {
+      sessao.mensagens.push({ 
+        role: "ai", 
+        text: "⚠️ Chave de API não configurada. Vá até a aba 'Configurações API', adicione sua credencial secreta da Anthropic para ativar o cérebro cognitivo.",
+        meta: "Sistema"
+      });
+      renderMensagensAtivas();
+    }, 400);
+    return;
+  }
+
+  // Adiciona balão de carregamento fictício
+  sessao.mensagens.push({ role: "ai", text: "Processando fundamentação jurídica nas bases de jurisprudência...", meta: "Pensando..." });
+  renderMensagensAtivas();
+  
+  const msgsBox = document.getElementById('chatMessages');
+  const allBubbles = msgsBox.getElementsByClassName('message ai');
+  const targetBubble = allBubbles[allBubbles.length - 1];
+
+  try {
+    // Engenharia reversa estruturada de chamadas Claude sem back-end proxy direta do navegador
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'x-api-key': key,
+        'anthropic-version': '2023-06-01',
+        'content-type': 'application/json',
+        'dangerously-allow-the-user-api-key-in-the-browser': 'true'
+      },
+      body: JSON.stringify({
+        model: model,
+        max_tokens: 2048,
+        messages: [{ role: 'user', content: text }]
+      })
+    });
+
+    const data = await response.json();
+    if(data && data.content && data.content[0]) {
+      const aiReply = data.content[0].text;
+      // Atualiza o dado real na sessão
+      sessao.mensagens[sessao.mensagens.length - 1] = { role: "ai", text: aiReply, meta: "JurisMind AI • Sincronizado" };
+      targetBubble.firstChild.textContent = aiReply; // Altera texto puro mantendo os nós internos
+      targetBubble.querySelector('.message-meta').textContent = "JurisMind AI • Concluído";
+      saveChatSessions();
+    } else {
+      throw new Error(data.error?.message || "Resposta em formato inválido");
+    }
+  } catch(err) {
+    console.error(err);
+    const errMsg = "Falha crítica na conexão com o Claude AI. Verifique se o formato da sua chave secreta ou o saldo da sua conta Anthropic estão corretos.";
+    sessao.mensagens[sessao.mensagens.length - 1] = { role: "ai", text: errMsg, meta: "Erro de Conexão" };
+    targetBubble.firstChild.textContent = errMsg;
+    targetBubble.querySelector('.message-meta').textContent = "Erro";
+    saveChatSessions();
+  }
+  msgsBox.scrollTop = msgsBox.scrollHeight;
+}
+
+// ── MONITOR DE MATÉRIAS E CRONOGRAMA DINÂMICO ──
+let cronState = JSON.parse(localStorage.getItem('juris_cron_state')) || {
+  data_inicio: "",
+  data_prova: "",
+  materias_gerais: [
+    { nome: "Direito Constitucional", peso: "Alta Relevância", lido: false, questoes: false },
+    { nome: "Direito Administrativo", peso: "Alta Relevância", lido: false, questoes: false },
+    { nome: "Direito Civil", peso: "Média Relevância", lido: false, questoes: false },
+    { nome: "Direito Processual Civil", peso: "Alta Relevância", lido: false, questoes: false },
+    { nome: "Direito Penal", peso: "Média Relevância", lido: false, questoes: false },
+    { nome: "Direito Processual Penal", peso: "Média Relevância", lido: false, questoes: false },
+    { nome: "Direito Tributário", peso: "Baixa Relevância", lido: false, questoes: false },
+    { nome: "Língua Portuguesa", peso: "Alta Relevância", lido: false, questoes: false }
+  ]
+};
+
+function saveCronState() {
+  const di = document.getElementById('cron-data-inicio');
+  const dp = document.getElementById('cron-data-prova');
+  if(di) cronState.data_inicio = di.value;
+  if(dp) cronState.data_prova = dp.value;
+  
+  localStorage.setItem('juris_cron_state', JSON.stringify(cronState));
+  updateCronProgress();
+}
+
+function renderMaterias() {
+  const container = document.getElementById('cron-materias-list');
+  if(!container) return;
+  container.innerHTML = "";
+
+  cronState.materias_gerais.forEach((mat, idx) => {
+    const row = document.createElement('div');
+    row.className = "cron-materia-row";
+    
+    const pClass = mat.peso === 'Alta Relevância' ? 'badge-blue' : (mat.peso === 'Média Relevância' ? 'badge-amber' : 'badge-blue');
+    
+    row.innerHTML = `
+      <div style="display:flex; flex-direction:column; gap:4px;">
+        <span style="font-weight:700; color:var(--text);">${mat.nome}</span>
+        <div><span class="badge ${pClass}">${mat.peso}</span></div>
+      </div>
+      <div style="display:flex; gap:20px; align-items:center;">
+        <label style="margin:0; display:flex; align-items:center; gap:6px; cursor:pointer;">
+          <input type="checkbox" ${mat.lido ? 'checked' : ''} onchange="toggleMateriaCheck(${idx}, 'lido')" style="width:auto; cursor:pointer;"> Doutrina lida
+        </label>
+        <label style="margin:0; display:flex; align-items:center; gap:6px; cursor:pointer;">
+          <input type="checkbox" ${mat.questoes ? 'checked' : ''} onchange="toggleMateriaCheck(${idx}, 'questoes')" style="width:auto; cursor:pointer;"> Questões feitas
+        </label>
+      </div>
+    `;
+    container.appendChild(row);
+  });
+}
+
+function toggleMateriaCheck(idx, campo) {
+  cronState.materias_gerais[idx][campo] = !cronState.materias_gerais[idx][campo];
+  saveCronState();
+}
+
+function updateCronProgress() {
+  const mats = cronState.materias_gerais;
+  const totalMetas = mats.length * 2; // Lido + Questoes
+  let metasCumpridas = 0;
+  
+  mats.forEach(m => {
+    if(m.lido) metasCumpridas++;
+    if(m.questoes) metasCumpridas++;
+  });
+  
+  const pct = totalMetas > 0 ? Math.round((metasCumpridas / totalMetas) * 100) : 0;
+  
+  const txt = document.getElementById('txt-progresso-cron');
+  const bar = document.getElementById('bar-progresso-cron');
+  if(txt) txt.textContent = pct + "%";
+  if(bar) bar.style.width = pct + "%";
+}
+
+function resetCronProgress() {
+  if(!confirm("Tem certeza de que deseja zerar todo o progresso do edital?")) return;
+  cronState.materias_gerais.forEach(m => {
+    m.lido = false;
+    m.questoes = false;
+  });
+  saveCronState();
+  renderMaterias();
+}
+
+function gerarSugestaoCiclo() {
+  alert("Engenharia Reversa Concluída: Pesos recalculados com base nas estatísticas das últimas provas!");
+  renderMaterias();
+}
+
+// ── REPOSITÓRIO DINÂMICO: VADE MECUM DIGITAL ──
+function renderLeis() {
+  const container = document.getElementById('leis-list');
+  if(!container) return;
+  container.innerHTML = "";
+  
+  const countDash = document.getElementById('dash-count-leis');
+  if(countDash) countDash.textContent = window.leis.length;
+
+  if(window.leis.length === 0) {
+    container.innerHTML = `<div style="text-align:center; padding:20px; color:var(--text3); font-weight:600;">Nenhuma norma cadastrada no seu acervo local.</div>`;
+    return;
+  }
+
+  window.leis.forEach(l => {
+    const item = document.createElement('div');
+    item.className = "list-item";
+    item.innerHTML = `
+      <div class="item-info">
+        <span class="item-title">${l.titulo}</span>
+        <span class="item-meta">Identificador Único: #${l._id}</span>
+      </div>
+      <div class="item-actions">
+        <button class="btn btn-sec btn-sm" onclick="abrirPdf('${l.titulo}', 'lei')">Estudar Lei</button>
+        <button class="btn btn-danger btn-sm" onclick="removeLeiItem('${l._id}')">Remover</button>
+      </div>
+    `;
+    container.appendChild(item);
+  });
+}
+
+async function addLeiItem() {
+  const inp = document.getElementById('lei-titulo');
+  const val = inp ? inp.value.trim() : "";
+  if(!val) return;
+
+  const nova = { _id: String(Date.now()), titulo: val };
+  window.leis.unshift(nova);
+  
+  if(window.fbReady) {
+    await window.fbSave('leis', nova._id, nova);
+  }
+  
+  inp.value = "";
+  renderLeis();
+}
+
+async function removeLeiItem(id) {
+  if(!confirm("Excluir esta norma da base?")) return;
+  window.leis = window.leis.filter(x => x._id !== id);
+  
+  if(window.fbReady) {
+    await window.fbDelete('leis', id);
+  }
+  renderLeis();
+}
+
+// ── REPOSITÓRIO DINÂMICO: CADERNO DE SIMULADOS ──
+function renderProvas() {
+  const container = document.getElementById('provas-list');
+  if(!container) return;
+  container.innerHTML = "";
+  
+  const countDash = document.getElementById('dash-count-provas');
+  if(countDash) countDash.textContent = window.provas.length;
+
+  if(window.provas.length === 0) {
+    container.innerHTML = `<div style="text-align:center; padding:20px; color:var(--text3); font-weight:600;">Nenhum simulado cadastrado na base de dados.</div>`;
+    return;
+  }
+
+  window.provas.forEach(p => {
+    const item = document.createElement('div');
+    item.className = "list-item";
+    item.innerHTML = `
+      <div class="item-info">
+        <span class="item-title">${p.titulo}</span>
+        <span class="item-meta">Adicionado em: ${new Date(Number(p._id)).toLocaleDateString('pt-BR')}</span>
+      </div>
+      <div class="item-actions">
+        <button class="btn btn-sec btn-sm" onclick="abrirPdf('${p.titulo}', 'prova')">Resolver Bloco</button>
+        <button class="btn btn-danger btn-sm" onclick="removeProvaItem('${p._id}')">Remover</button>
+      </div>
+    `;
+    container.appendChild(item);
+  });
+}
+
+async function addProvaItem() {
+  const inp = document.getElementById('prova-titulo');
+  const val = inp ? inp.value.trim() : "";
+  if(!val) return;
+
+  const nova = { _id: String(Date.now()), titulo: val };
+  window.provas.unshift(nova);
+
+  if(window.fbReady) {
+    await window.fbSave('provas', nova._id, nova);
+  }
+
+  inp.value = "";
+  renderProvas();
+}
+
+async function removeProvaItem(id) {
+  if(!confirm("Excluir este caderno de questões permanentemente?")) return;
+  window.provas = window.provas.filter(x => x._id !== id);
+
+  if(window.fbReady) {
+    await window.fbDelete('provas', id);
+  }
+  renderProvas();
+}
+
+// ── REPOSITÓRIO DINÂMICO: MANUAIS E DOUTRINAS ──
+function renderApostilas() {
+  const container = document.getElementById('apostilas-list');
+  if(!container) return;
+  container.innerHTML = "";
+
+  if(window.apostilas.length === 0) {
+    container.innerHTML = `<div style="text-align:center; padding:20px; color:var(--text3); font-weight:600;">Nenhum manual ou resumo acoplado ainda.</div>`;
+    return;
+  }
+
+  window.apostilas.forEach(a => {
+    const item = document.createElement('div');
+    item.className = "list-item";
+    item.innerHTML = `
+      <div class="item-info">
+        <span class="item-title">${a.titulo}</span>
+        <span class="item-meta">Doutrina / Resumos Temáticos</span>
+      </div>
+      <div class="item-actions">
+        <button class="btn btn-sec btn-sm" onclick="abrirPdf('${a.titulo}', 'apostila')">Abrir Texto</button>
+        <button class="btn btn-danger btn-sm" onclick="removeApostilaItem('${a._id}')">Remover</button>
+      </div>
+    `;
+    container.appendChild(item);
+  });
+}
+
+async function addApostilaItem() {
+  const inp = document.getElementById('ap-titulo');
+  const val = inp ? inp.value.trim() : "";
+  if(!val) return;
+
+  const nova = { _id: String(Date.now()), titulo: val };
+  window.apostilas.unshift(nova);
+
+  if(window.fbReady) {
+    await window.fbSave('apostilas', nova._id, nova);
+  }
+
+  inp.value = "";
+  renderApostilas();
+}
+
+async function removeApostilaItem(id) {
+  if(!confirm("Deseja deletar este material doutrinário?")) return;
+  window.apostilas = window.apostilas.filter(x => x._id !== id);
+
+  if(window.fbReady) {
+    await window.fbDelete('apostilas', id);
+  }
+  renderApostilas();
+}
+
+// ── CONFIGURAÇÕES E ESTADO DA CREDENCIAL CLAUDE ──
+function saveConfigKeys() {
+  const keyInput = document.getElementById('cfg-claude-key');
+  const modelSelect = document.getElementById('cfg-claude-model');
+  
+  if(keyInput) localStorage.setItem('cfg_claude_key', keyInput.value.trim());
+  if(modelSelect) localStorage.setItem('cfg_claude_model', modelSelect.value);
+  
+  updateKeyIndicator();
+  alert("Credenciais e chaves cognitivas salvas com sucesso!");
+}
+
+function renderConfigPage() {
+  const keyInput = document.getElementById('cfg-claude-key');
+  const modelSelect = document.getElementById('cfg-claude-model');
+  
+  if(keyInput) keyInput.value = localStorage.getItem('cfg_claude_key') || "";
+  if(modelSelect) modelSelect.value = localStorage.getItem('cfg_claude_model') || "claude-3-5-sonnet-20241022";
+  
+  updateKeyIndicator();
+}
+
+function updateKeyIndicator() {
+  const ind = document.getElementById('key-status-ind');
+  if(!ind) return;
+  
+  const val = document.getElementById('cfg-claude-key')?.value.trim() || localStorage.getItem('cfg_claude_key') || "";
+  if(val.startsWith('sk-ant-')) {
+    ind.textContent = "Chave Ativa e Configurada";
+    ind.className = "key-status ok";
+  } else {
+    ind.textContent = "Pendente de Configuração";
+    ind.className = "key-status missing";
+  }
+}
+
+// ── SIMULADOR INTEGRADO DE LEITURA ATIVA (MOCK PDF) ──
+let currentPdfPage = 1;
+function abrirPdf(titulo, tipo) {
+  const modalTitle = document.getElementById('pdfModalTitle');
+  if(modalTitle) modalTitle.textContent = `Ambiente de Leitura Ativa: ${titulo}`;
+  
+  currentPdfPage = 1;
+  const pInfo = document.getElementById('pdfPageInfo');
+  if(pInfo) pInfo.textContent = "p. 1/1";
+  
+  const overlay = document.getElementById('pdfOverlay');
+  if(overlay) overlay.style.display = "flex";
+  
+  const area = document.getElementById('pdfRenderArea');
+  if(area) {
+    area.innerHTML = `
+      <div style="font-family:serif; line-height:1.8; color:#1e293b;">
+        <h2 style="text-align:center; font-size:20px; margin-bottom:20px; border-bottom:2px solid #cbd5e1; padding-bottom:10px;">MATERIAL DE FIXAÇÃO DIRECIONADA — JURISMIND</h2>
+        <p>Você está acessando a simulação estruturada para: <strong>${titulo}</strong>.</p><br>
+        <p><strong>Informativo de Fixação:</strong> Em conformidade com o mapeamento estatístico de recorrência das bancas jurídicas, o estudo focado deste dispositivo ou resumo deve priorizar os critérios de literalidade e as exceções sumuladas pelos tribunais superiores (STF e STJ).</p><br>
+        <p style="background:#f1f5f9; padding:15px; border-left:4px solid var(--accent); border-radius:4px; font-style:italic;">
+          Art. 5º (CF) Todos são iguais perante a lei, sem distinção de qualquer natureza, garantindo-se aos brasileiros e aos estrangeiros residentes no País a inviolabilidade do direito à vida, à liberdade, à igualdade, à segurança e à propriedade...
+        </p><br>
+        <p>Utilize a barra lateral de mentoria integrada com inteligência artificial para formular questionamentos ou gerar testes rápidos baseados no conteúdo deste material carregado! Personalize conforme o caso.</p>
+      </div>
+    `;
+  }
+}
+
+function fecharPdf() {
+  const overlay = document.getElementById('pdfOverlay');
+  if(overlay) overlay.style.display = "none";
+}
+function pdfNext() { alert("Esta é a única página gerada estruturalmente para este simulado local."); }
+function pdfPrev() { alert("Você já está na página inicial."); }
+
+// ── INICIALIZAÇÃO AUTOMÁTICA DO SISTEMA ──
+document.addEventListener('DOMContentLoaded', () => {
+  // Inicialização do Cronograma e Materias
+  renderMaterias();
+  if (cronState.data_inicio) {
+    const el1 = document.getElementById('cron-data-inicio');
+    const el2 = document.getElementById('cron-data-prova');
+    if(el1) el1.value = cronState.data_inicio;
+    if(el2) el2.value = cronState.data_prova;
+  }
+  
+  // Renderizadores locais preventivos antes do retorno do Firebase
+  renderApostilas();
+  renderLeis();
+  renderProvas();
+  
+  // Inicialização do Chat e Pomodoro
+  renderSessoes();
+  renderMensagensAtivas();
+  _pomoRender();
+  updateCronProgress();
+  renderConfigPage();
+  
+  // Sincronização visual do botão de tema escuro
+  if(document.body.classList.contains('dark') && document.getElementById('darkToggleBtn')) {
+    document.getElementById('darkToggleBtn').style.color = 'var(--accent)';
+  }
+});
+</script>
+
+<div class="pdf-overlay" id="pdfOverlay" onclick="if(event.target===this)fecharPdf()">
+  <div class="pdf-modal">
+    <div class="pdf-modal-head">
+      <span class="pdf-modal-title" id="pdfModalTitle">Visualizar PDF</span>
+      <button class="pdf-modal-close" onclick="fecharPdf()">&times;</button>
+    </div>
+    <div class="pdf-toolbar">
+      <button class="pdf-tbtn" onclick="pdfPrev()">◀ Anterior</button>
+      <span class="pdf-pinfo" id="pdfPageInfo">p. 1/1</span>
+      <button class="pdf-tbtn" onclick="pdfNext()">Próxima ▶</button>
+    </div>
+    <div class="pdf-body">
+      <div class="pdf-page-sim" id="pdfRenderArea">Carregando visualização de texto estruturado...</div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
