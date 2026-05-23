@@ -22,7 +22,7 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    // ── FIREBASE HELPERS ──
+    // ── FIREBASE HELPERS NO ESCOPO GLOBAL ──
     window.fbSave = async (colecao, id, dados) => {
       try {
         await setDoc(doc(db, colecao, String(id)), { ...dados, _id: String(id) });
@@ -44,29 +44,48 @@
       } catch(e) { console.error('fbLoad erro:', e); return []; }
     };
 
-    window.fbReady = true;
-
-    // ── CARREGAR DADOS AO INICIAR ──
+    // ── CARREGAR DADOS AO INICIAR COM SEGURANÇA ──
     window.carregarDoFirebase = async () => {
       try {
+        console.log('Tentando conectar ao Firebase...');
         const [aps, ls, pvs] = await Promise.all([
           window.fbLoad('apostilas'),
           window.fbLoad('leis'),
           window.fbLoad('provas'),
         ]);
-        if(aps.length) { window.apostilas = aps.sort((a,b)=>b._id-a._id); }
-        if(ls.length)  { window.leis = ls.sort((a,b)=>b._id-a._id); }
-        if(pvs.length) { window.provas = pvs.sort((a,b)=>b._id-a._id); }
+        
+        // Garante que as propriedades globais existam mesmo se o banco estiver vazio
+        window.apostilas = aps.length ? aps.sort((a,b)=>Number(b._id)-Number(a._id)) : [];
+        window.leis = ls.length ? ls.sort((a,b)=>Number(b._id)-Number(a._id)) : [];
+        window.provas = pvs.length ? pvs.sort((a,b)=>Number(b._id)-Number(a._id)) : [];
 
-        // Atualizar UI
+        // Ativa a luz verde da API indicando sucesso
+        window.fbReady = true;
+        const apiDot = document.querySelector('.api-dot');
+        if (apiDot) apiDot.classList.add('on');
+        const apiVal = document.querySelector('.api-val');
+        if (apiVal) apiVal.textContent = 'Conectado';
+
+        // Atualiza a UI de forma segura
         if(typeof renderApostilas === 'function') renderApostilas();
         if(typeof renderLeis === 'function') renderLeis();
         if(typeof renderProvas === 'function') renderProvas();
         if(typeof renderHome === 'function') renderHome();
         if(typeof renderConfigPage === 'function') renderConfigPage();
 
-        console.log('✓ Firebase: dados carregados');
-      } catch(e) { console.error('Erro ao carregar Firebase:', e); }
+        console.log('✓ Firebase: dados carregados com sucesso!');
+      } catch(e) { 
+        console.error('Erro crítico ao carregar Firebase:', e); 
+      }
+    };
+
+    // Inicialização robusta: aguarda o documento estar pronto
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', () => window.carregarDoFirebase());
+    } else {
+      window.carregarDoFirebase();
+    }
+  </script>
     };
 
     // Aguarda app carregar e sincroniza
