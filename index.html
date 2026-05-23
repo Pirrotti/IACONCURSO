@@ -78,15 +78,21 @@
       }
     };
 
-    // Inicialização robusta: aguarda o documento estar pronto
+    // Inicialização robusta: aguarda o documento estar pronto e executa a sincronização
     if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', () => window.carregarDoFirebase());
+      document.addEventListener('DOMContentLoaded', () => {
+        setTimeout(window.carregarDoFirebase, 300);
+      });
     } else {
-      window.carregarDoFirebase();
+      setTimeout(window.carregarDoFirebase, 300);
     }
   </script>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
-/* Restante do arquivo CSS e estrutura HTML permanecem idênticos abaixo... */
+:root {
+  --white:#ffffff; --bg:#f5f6fa; --bg2:#eef0f6;
+  --border:#e2e5ef; --border2:#c8cde0;
+  --text:#1a1d2e; --text2:#4a4f6a; --text3:#8b91b0;
+/* O restante do seu arquivo CSS e estrutura HTML continuam iguais abaixo... */
